@@ -1,5 +1,5 @@
-declare module "bottleneckjs" {
-  namespace Bottleneckjs {
+declare module "pacekit" {
+  namespace Pacekit {
     type ConstructorOptions = {
       /**
         * How many jobs can be running at the same time.
@@ -16,9 +16,9 @@ declare module "bottleneckjs" {
       /**
         * Which strategy to use if the queue gets longer than the high water mark.
         */
-      readonly strategy?: Bottleneckjs.Strategy | null;
+      readonly strategy?: Pacekit.Strategy | null;
       /**
-        * The `penalty` value used by the `Bottleneckjs.strategy.BLOCK` strategy.
+        * The `penalty` value used by the `Pacekit.strategy.BLOCK` strategy.
         */
       readonly penalty?: number | null;
       /**
@@ -62,7 +62,7 @@ declare module "bottleneckjs" {
         */
       readonly datastore?: string | null;
       /**
-        * Override the Promise library used by Bottleneckjs.
+        * Override the Promise library used by Pacekit.
         */
       readonly Promise?: any;
       /**
@@ -74,19 +74,19 @@ declare module "bottleneckjs" {
         */
       readonly clusterNodes?: any;
       /**
-        * An existing Bottleneckjs.RedisConnection or Bottleneckjs.IORedisConnection object to use.
+        * An existing Pacekit.RedisConnection or Pacekit.IORedisConnection object to use.
         * If using, `datastore`, `clientOptions` and `clusterNodes` will be ignored.
         */
       /**
-        * Optional Redis/IORedis library from `require('ioredis')` or equivalent. If not, Bottleneckjs will attempt to require Redis/IORedis at runtime.
+        * Optional Redis/IORedis library from `require('ioredis')` or equivalent. If not, Pacekit will attempt to require Redis/IORedis at runtime.
         */
       readonly Redis?: any;
       /**
-        * Bottleneckjs connection object created from `new Bottleneckjs.RedisConnection` or `new Bottleneckjs.IORedisConnection`.
+        * Pacekit connection object created from `new Pacekit.RedisConnection` or `new Pacekit.IORedisConnection`.
         */
-      readonly connection?: Bottleneckjs.RedisConnection | Bottleneckjs.IORedisConnection | null;
+      readonly connection?: Pacekit.RedisConnection | Pacekit.IORedisConnection | null;
       /**
-        * When set to `true`, on initial startup, the limiter will wipe any existing Bottleneckjs state data on the Redis db.
+        * When set to `true`, on initial startup, the limiter will wipe any existing Pacekit state data on the Redis db.
         */
       readonly clearDatastore?: boolean | null;
       /**
@@ -130,7 +130,7 @@ declare module "bottleneckjs" {
     };
     type Callback<T> = (err: any, result: T) => void;
     type ClientsList = { client?: any; subscriber?: any };
-    type GroupLimiterPair = { key: string; limiter: Bottleneckjs };
+    type GroupLimiterPair = { key: string; limiter: Pacekit };
     interface Strategy { }
 
     type EventInfo = {
@@ -177,7 +177,7 @@ declare module "bottleneckjs" {
         */
       readonly client?: any;
       /**
-        * Optional Redis library from `require('redis')` or equivalent. If not, Bottleneckjs will attempt to require Redis at runtime.
+        * Optional Redis library from `require('redis')` or equivalent. If not, Pacekit will attempt to require Redis at runtime.
         */
       readonly Redis?: any;
     };
@@ -196,7 +196,7 @@ declare module "bottleneckjs" {
         */
       readonly client?: any;
       /**
-        * Optional IORedis library from `require('ioredis')` or equivalent. If not, Bottleneckjs will attempt to require IORedis at runtime.
+        * Optional IORedis library from `require('ioredis')` or equivalent. If not, Pacekit will attempt to require IORedis at runtime.
         */
       readonly Redis?: any;
     };
@@ -216,7 +216,7 @@ declare module "bottleneckjs" {
     }
 
     class RedisConnection {
-      constructor(options?: Bottleneckjs.RedisConnectionOptions);
+      constructor(options?: Pacekit.RedisConnectionOptions);
 
       /**
         * Register an event listener.
@@ -245,7 +245,7 @@ declare module "bottleneckjs" {
     }
 
     class IORedisConnection {
-      constructor(options?: Bottleneckjs.IORedisConnectionOptions);
+      constructor(options?: Pacekit.IORedisConnectionOptions);
 
       /**
         * Register an event listener.
@@ -274,7 +274,7 @@ declare module "bottleneckjs" {
     }
 
     class Batcher {
-      constructor(options?: Bottleneckjs.BatcherOptions);
+      constructor(options?: Pacekit.BatcherOptions);
 
       /**
         * Register an event listener.
@@ -301,17 +301,17 @@ declare module "bottleneckjs" {
     }
 
     class Group {
-      constructor(options?: Bottleneckjs.ConstructorOptions);
+      constructor(options?: Pacekit.ConstructorOptions);
 
       id: string;
       datastore: string;
-      connection?: Bottleneckjs.RedisConnection | Bottleneckjs.IORedisConnection;
+      connection?: Pacekit.RedisConnection | Pacekit.IORedisConnection;
 
       /**
         * Returns the limiter for the specified key.
         * @param str - The limiter key.
         */
-      key(str: string): Bottleneckjs;
+      key(str: string): Pacekit;
 
       /**
         * Register an event listener.
@@ -320,7 +320,7 @@ declare module "bottleneckjs" {
         */
       on(name: string, fn: Function): void;
       on(name: "error", fn: (error: any) => void): void;
-      on(name: "created", fn: (limiter: Bottleneckjs, key: string) => void): void;
+      on(name: "created", fn: (limiter: Pacekit, key: string) => void): void;
 
       /**
         * Register an event listener for one event only.
@@ -329,7 +329,7 @@ declare module "bottleneckjs" {
         */
       once(name: string, fn: Function): void;
       once(name: "error", fn: (error: any) => void): void;
-      once(name: "created", fn: (limiter: Bottleneckjs, key: string) => void): void;
+      once(name: "created", fn: (limiter: Pacekit, key: string) => void): void;
 
       /**
         * Removes all registered event listeners.
@@ -341,7 +341,7 @@ declare module "bottleneckjs" {
         * Updates the group settings.
         * @param options - The new settings.
         */
-      updateSettings(options: Bottleneckjs.ConstructorOptions): void;
+      updateSettings(options: Pacekit.ConstructorOptions): void;
 
       /**
         * Deletes the limiter for the given key.
@@ -359,7 +359,7 @@ declare module "bottleneckjs" {
       /**
         * Returns all the key-limiter pairs.
         */
-      limiters(): Bottleneckjs.GroupLimiterPair[];
+      limiters(): Pacekit.GroupLimiterPair[];
 
       /**
         * Returns all Group keys in the local instance
@@ -390,31 +390,31 @@ declare module "bottleneckjs" {
     }
   }
 
-  class Bottleneckjs {
+  class Pacekit {
     public static readonly strategy: {
       /**
         * When adding a new job to a limiter, if the queue length reaches `highWater`, drop the oldest job with the lowest priority. This is useful when jobs that have been waiting for too long are not important anymore. If all the queued jobs are more important (based on their `priority` value) than the one being added, it will not be added.
         */
-      readonly LEAK: Bottleneckjs.Strategy;
+      readonly LEAK: Pacekit.Strategy;
       /**
         * Same as `LEAK`, except it will only drop jobs that are less important than the one being added. If all the queued jobs are as or more important than the new one, it will not be added.
         */
-      readonly OVERFLOW_PRIORITY: Bottleneckjs.Strategy;
+      readonly OVERFLOW_PRIORITY: Pacekit.Strategy;
       /**
         * When adding a new job to a limiter, if the queue length reaches `highWater`, do not add the new job. This strategy totally ignores priority levels.
         */
-      readonly OVERFLOW: Bottleneckjs.Strategy;
+      readonly OVERFLOW: Pacekit.Strategy;
       /**
         * When adding a new job to a limiter, if the queue length reaches `highWater`, the limiter falls into "blocked mode". All queued jobs are dropped and no new jobs will be accepted until the limiter unblocks. It will unblock after `penalty` milliseconds have passed without receiving a new job. `penalty` is equal to `15 * minTime` (or `5000` if `minTime` is `0`) by default and can be changed by calling `changePenalty()`. This strategy is ideal when bruteforce attacks are to be expected. This strategy totally ignores priority levels.
         */
-      readonly BLOCK: Bottleneckjs.Strategy;
+      readonly BLOCK: Pacekit.Strategy;
     };
 
-    constructor(options?: Bottleneckjs.ConstructorOptions);
+    constructor(options?: Pacekit.ConstructorOptions);
 
     id: string;
     datastore: string;
-    connection?: Bottleneckjs.RedisConnection | Bottleneckjs.IORedisConnection;
+    connection?: Pacekit.RedisConnection | Pacekit.IORedisConnection;
 
     /**
       * Returns a promise which will be resolved once the limiter is ready to accept jobs
@@ -425,7 +425,7 @@ declare module "bottleneckjs" {
     /**
       * Returns a datastore-specific object of redis clients.
       */
-    clients(): Bottleneckjs.ClientsList;
+    clients(): Pacekit.ClientsList;
 
     /**
       * Returns the name of the Redis pubsub channel used for this limiter
@@ -446,17 +446,17 @@ declare module "bottleneckjs" {
     /**
       * Returns an object with the current number of jobs per status.
       */
-    counts(): Bottleneckjs.Counts;
+    counts(): Pacekit.Counts;
 
     /**
       * Returns the status of the job with the provided job id.
       */
-    jobStatus(id: string): Bottleneckjs.Status;
+    jobStatus(id: string): Pacekit.Status;
 
     /**
       * Returns the status of the job with the provided job id.
       */
-    jobs(status?: Bottleneckjs.Status): string[];
+    jobs(status?: Pacekit.Status): string[];
 
     /**
       * Returns the number of requests queued.
@@ -501,14 +501,14 @@ declare module "bottleneckjs" {
     on(name: "depleted", fn: (empty: boolean) => void): void;
     on(name: "message", fn: (message: string) => void): void;
     on(name: "debug", fn: (message: string, info: any) => void): void;
-    on(name: "dropped", fn: (dropped: Bottleneckjs.EventInfoDropped) => void): void;
-    on(name: "received", fn: (info: Bottleneckjs.EventInfo) => void): void;
-    on(name: "queued", fn: (info: Bottleneckjs.EventInfoQueued) => void): void;
-    on(name: "scheduled", fn: (info: Bottleneckjs.EventInfo) => void): void;
-    on(name: "executing", fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
-    on(name: "failed", fn: (error: any, info: Bottleneckjs.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
-    on(name: "retry", fn: (message: string, info: Bottleneckjs.EventInfoRetryable) => void): void;
-    on(name: "done", fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
+    on(name: "dropped", fn: (dropped: Pacekit.EventInfoDropped) => void): void;
+    on(name: "received", fn: (info: Pacekit.EventInfo) => void): void;
+    on(name: "queued", fn: (info: Pacekit.EventInfoQueued) => void): void;
+    on(name: "scheduled", fn: (info: Pacekit.EventInfo) => void): void;
+    on(name: "executing", fn: (info: Pacekit.EventInfoRetryable) => void): void;
+    on(name: "failed", fn: (error: any, info: Pacekit.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
+    on(name: "retry", fn: (message: string, info: Pacekit.EventInfoRetryable) => void): void;
+    on(name: "done", fn: (info: Pacekit.EventInfoRetryable) => void): void;
 
     /**
       * Register an event listener for one event only.
@@ -521,14 +521,14 @@ declare module "bottleneckjs" {
     once(name: "depleted", fn: (empty: boolean) => void): void;
     once(name: "message", fn: (message: string) => void): void;
     once(name: "debug", fn: (message: string, info: any) => void): void;
-    once(name: "dropped", fn: (dropped: Bottleneckjs.EventInfoDropped) => void): void;
-    once(name: "received", fn: (info: Bottleneckjs.EventInfo) => void): void;
-    once(name: "queued", fn: (info: Bottleneckjs.EventInfoQueued) => void): void;
-    once(name: "scheduled", fn: (info: Bottleneckjs.EventInfo) => void): void;
-    once(name: "executing", fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
-    once(name: "failed", fn: (error: any, info: Bottleneckjs.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
-    once(name: "retry", fn: (message: string, info: Bottleneckjs.EventInfoRetryable) => void): void;
-    once(name: "done", fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
+    once(name: "dropped", fn: (dropped: Pacekit.EventInfoDropped) => void): void;
+    once(name: "received", fn: (info: Pacekit.EventInfo) => void): void;
+    once(name: "queued", fn: (info: Pacekit.EventInfoQueued) => void): void;
+    once(name: "scheduled", fn: (info: Pacekit.EventInfo) => void): void;
+    once(name: "executing", fn: (info: Pacekit.EventInfoRetryable) => void): void;
+    once(name: "failed", fn: (error: any, info: Pacekit.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
+    once(name: "retry", fn: (message: string, info: Pacekit.EventInfoRetryable) => void): void;
+    once(name: "done", fn: (info: Pacekit.EventInfoRetryable) => void): void;
 
     /**
       * Removes all registered event listeners.
@@ -540,7 +540,7 @@ declare module "bottleneckjs" {
       * Changes the settings for future requests.
       * @param options - The new settings.
       */
-    updateSettings(options?: Bottleneckjs.ConstructorOptions): Bottleneckjs;
+    updateSettings(options?: Pacekit.ConstructorOptions): Pacekit;
 
     /**
       * Adds to the reservoir count and returns the new value.
@@ -550,7 +550,7 @@ declare module "bottleneckjs" {
     /**
       * The `stop()` method is used to safely shutdown a limiter. It prevents any new jobs from being added to the limiter and waits for all Executing jobs to complete.
       */
-    stop(options?: Bottleneckjs.StopOptions): Promise<void>;
+    stop(options?: Pacekit.StopOptions): Promise<void>;
 
     /**
       * Returns the current reservoir count, if any.
@@ -561,43 +561,43 @@ declare module "bottleneckjs" {
       * Chain this limiter to another.
       * @param limiter - The limiter that requests to this limiter must also follow.
       */
-    chain(limiter?: Bottleneckjs): Bottleneckjs;
+    chain(limiter?: Pacekit): Pacekit;
 
-    wrap<R>(fn: () => PromiseLike<R>): (() => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions) => Promise<R>; };
-    wrap<R, A1>(fn: (arg1: A1) => PromiseLike<R>): ((arg1: A1) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1) => Promise<R>; };
-    wrap<R, A1, A2>(fn: (arg1: A1, arg2: A2) => PromiseLike<R>): ((arg1: A1, arg2: A2) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2) => Promise<R>; };
-    wrap<R, A1, A2, A3>(fn: (arg1: A1, arg2: A2, arg3: A3) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3) => Promise<R>; };
-    wrap<R, A1, A2, A3, A4>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<R>; };
-    wrap<R, A1, A2, A3, A4, A5>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<R>; };
-    wrap<R, A1, A2, A3, A4, A5, A6>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => Promise<R>; };
-    wrap<R, A1, A2, A3, A4, A5, A6, A7>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => Promise<R>; };
-    wrap<R, A1, A2, A3, A4, A5, A6, A7, A8>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => Promise<R>; };
-    wrap<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => Promise<R>; };
-    wrap<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => Promise<R>; };
+    wrap<R>(fn: () => PromiseLike<R>): (() => Promise<R>) & { withOptions: (options: Pacekit.JobOptions) => Promise<R>; };
+    wrap<R, A1>(fn: (arg1: A1) => PromiseLike<R>): ((arg1: A1) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1) => Promise<R>; };
+    wrap<R, A1, A2>(fn: (arg1: A1, arg2: A2) => PromiseLike<R>): ((arg1: A1, arg2: A2) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2) => Promise<R>; };
+    wrap<R, A1, A2, A3>(fn: (arg1: A1, arg2: A2, arg3: A3) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3) => Promise<R>; };
+    wrap<R, A1, A2, A3, A4>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<R>; };
+    wrap<R, A1, A2, A3, A4, A5>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<R>; };
+    wrap<R, A1, A2, A3, A4, A5, A6>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => Promise<R>; };
+    wrap<R, A1, A2, A3, A4, A5, A6, A7>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => Promise<R>; };
+    wrap<R, A1, A2, A3, A4, A5, A6, A7, A8>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => Promise<R>; };
+    wrap<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => Promise<R>; };
+    wrap<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => PromiseLike<R>): ((arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => Promise<R>) & { withOptions: (options: Pacekit.JobOptions, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => Promise<R>; };
 
-    submit<R>(fn: (callback: Bottleneckjs.Callback<R>) => void, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1>(fn: (arg1: A1, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2>(fn: (arg1: A1, arg2: A2, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3>(fn: (arg1: A1, arg2: A2, arg3: A3, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7, A8>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Bottleneckjs.Callback<R>): void;
+    submit<R>(fn: (callback: Pacekit.Callback<R>) => void, callback: Pacekit.Callback<R>): void;
+    submit<R, A1>(fn: (arg1: A1, callback: Pacekit.Callback<R>) => void, arg1: A1, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2>(fn: (arg1: A1, arg2: A2, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3>(fn: (arg1: A1, arg2: A2, arg3: A3, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7, A8>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Pacekit.Callback<R>): void;
 
-    submit<R>(options: Bottleneckjs.JobOptions, fn: (callback: Bottleneckjs.Callback<R>) => void, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7, A8>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Bottleneckjs.Callback<R>): void;
-    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Bottleneckjs.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Bottleneckjs.Callback<R>): void;
+    submit<R>(options: Pacekit.JobOptions, fn: (callback: Pacekit.Callback<R>) => void, callback: Pacekit.Callback<R>): void;
+    submit<R, A1>(options: Pacekit.JobOptions, fn: (arg1: A1, callback: Pacekit.Callback<R>) => void, arg1: A1, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7, A8>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, callback: Pacekit.Callback<R>): void;
+    submit<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Pacekit.Callback<R>) => void, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10, callback: Pacekit.Callback<R>): void;
 
     schedule<R>(fn: () => PromiseLike<R>): Promise<R>;
     schedule<R, A1>(fn: (arg1: A1) => PromiseLike<R>, arg1: A1): Promise<R>;
@@ -611,20 +611,20 @@ declare module "bottleneckjs" {
     schedule<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9): Promise<R>;
     schedule<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10): Promise<R>;
 
-    schedule<R>(options: Bottleneckjs.JobOptions, fn: () => PromiseLike<R>): Promise<R>;
-    schedule<R, A1>(options: Bottleneckjs.JobOptions, fn: (arg1: A1) => PromiseLike<R>, arg1: A1): Promise<R>;
-    schedule<R, A1, A2>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2) => PromiseLike<R>, arg1: A1, arg2: A2): Promise<R>;
-    schedule<R, A1, A2, A3>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3): Promise<R>;
-    schedule<R, A1, A2, A3, A4>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4): Promise<R>;
-    schedule<R, A1, A2, A3, A4, A5>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5): Promise<R>;
-    schedule<R, A1, A2, A3, A4, A5, A6>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6): Promise<R>;
-    schedule<R, A1, A2, A3, A4, A5, A6, A7>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7): Promise<R>;
-    schedule<R, A1, A2, A3, A4, A5, A6, A7, A8>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8): Promise<R>;
-    schedule<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9): Promise<R>;
-    schedule<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(options: Bottleneckjs.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10): Promise<R>;
+    schedule<R>(options: Pacekit.JobOptions, fn: () => PromiseLike<R>): Promise<R>;
+    schedule<R, A1>(options: Pacekit.JobOptions, fn: (arg1: A1) => PromiseLike<R>, arg1: A1): Promise<R>;
+    schedule<R, A1, A2>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2) => PromiseLike<R>, arg1: A1, arg2: A2): Promise<R>;
+    schedule<R, A1, A2, A3>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3): Promise<R>;
+    schedule<R, A1, A2, A3, A4>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4): Promise<R>;
+    schedule<R, A1, A2, A3, A4, A5>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5): Promise<R>;
+    schedule<R, A1, A2, A3, A4, A5, A6>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6): Promise<R>;
+    schedule<R, A1, A2, A3, A4, A5, A6, A7>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7): Promise<R>;
+    schedule<R, A1, A2, A3, A4, A5, A6, A7, A8>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8): Promise<R>;
+    schedule<R, A1, A2, A3, A4, A5, A6, A7, A8, A9>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9): Promise<R>;
+    schedule<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>(options: Pacekit.JobOptions, fn: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10) => PromiseLike<R>, arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, arg6: A6, arg7: A7, arg8: A8, arg9: A9, arg10: A10): Promise<R>;
   }
 
-  export default Bottleneckjs;
+  export default Pacekit;
 
 }
 

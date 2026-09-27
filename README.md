@@ -1,12 +1,12 @@
-# bottleneckjs
+# pacekit
 
 [![Downloads][npm-downloads]][npm-url]
 [![version][npm-version]][npm-url]
 [![License][npm-license]][license-url]
 
-Bottleneckjs is a lightweight and zero-dependency Task Scheduler and Rate Limiter for Node.js and the browser.
+Pacekit is a lightweight and zero-dependency Task Scheduler and Rate Limiter for Node.js and the browser.
 
-Bottleneckjs is an easy solution as it adds very little complexity to your code. It is battle-hardened, reliable and production-ready and used on a large scale in private companies and open source software.
+Pacekit is an easy solution as it adds very little complexity to your code. It is battle-hardened, reliable and production-ready and used on a large scale in private companies and open source software.
 
 It supports **Clustering**: it can rate limit jobs across multiple Node.js instances. It uses Redis and strictly atomic operations to stay reliable in the presence of unreliable clients and networks. It also supports _Redis Cluster_ and _Redis Sentinel_.
 
@@ -43,14 +43,14 @@ It supports **Clustering**: it can rate limit jobs across multiple Node.js insta
 ## Install
 
 ```
-npm install --save bottleneckjs
+npm install --save pacekit
 ```
 
 ```js
-import Bottleneckjs from "bottleneckjs";
+import Pacekit from "pacekit";
 
 // Note: To support older browsers and Node <6.0, you must import the ES5 bundle instead.
-var Bottleneckjs = require("bottleneckjs/es5");
+var Pacekit = require("pacekit/es5");
 ```
 
 ## Quick Start
@@ -60,7 +60,7 @@ var Bottleneckjs = require("bottleneckjs/es5");
 Most APIs have a rate limit. For example, to execute 3 requests per second:
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   minTime: 333,
 });
 ```
@@ -68,7 +68,7 @@ const limiter = new Bottleneckjs({
 If there's a chance some requests might take longer than 333ms and you want to prevent more than 1 request from running at a time, add `maxConcurrent: 1`:
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   maxConcurrent: 1,
   minTime: 333,
 });
@@ -148,7 +148,7 @@ limiter.submit(someAsyncCall, arg1, arg2, callback);
 
 Remember...
 
-Bottleneckjs builds a queue of jobs and executes them as soon as possible. By default, the jobs will be executed in the order they were received.
+Pacekit builds a queue of jobs and executes them as soon as possible. By default, the jobs will be executed in the order they were received.
 
 **Read the 'Gotchas' and you're good to go**. Or keep reading to learn about all the fine tuning and advanced options available. If your rate limits need to be enforced across a cluster of computers, read the [Clustering](#clustering) docs.
 
@@ -190,7 +190,7 @@ limiter.schedule(object.doSomething.bind(object));
 limiter.schedule(() => object.doSomething());
 ```
 
-- Bottleneckjs requires Node 6+ to function. However, an ES5 build is included: `var Bottleneckjs = require("bottleneckjs/es5");`.
+- Pacekit requires Node 6+ to function. However, an ES5 build is included: `var Pacekit = require("pacekit/es5");`.
 
 - Make sure you're catching `"error"` events emitted by your limiters!
 
@@ -202,14 +202,14 @@ limiter.schedule(() => object.doSomething());
 
 - **When using `submit()`**, make sure all the jobs will eventually complete by calling their callback, or set an [`expiration`](#job-options). Even if you submitted your job with a `null` callback , it still needs to call its callback. This is particularly important if you are using a `maxConcurrent` value that isn't `null` (unlimited), otherwise those not completed jobs will be clogging up the limiter and no new jobs will be allowed to run. It's safe to call the callback more than once, subsequent calls are ignored.
 
-- Using tools like `mockdate` in your tests to change time in JavaScript will likely result in undefined behavior from Bottleneckjs.
+- Using tools like `mockdate` in your tests to change time in JavaScript will likely result in undefined behavior from Pacekit.
 
 ## Docs
 
 ### Constructor
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   /* options */
 });
 ```
@@ -221,15 +221,15 @@ Basic options:
 | `maxConcurrent`             | `null` (unlimited)                              | How many jobs can be executing at the same time. Consider setting a value instead of leaving it `null`, it can help your application's performance, especially if you think the limiter's queue might get very long.                                                                          |
 | `minTime`                   | `0` ms                                          | How long to wait after launching a job before launching another one.                                                                                                                                                                                                                          |
 | `highWater`                 | `null` (unlimited)                              | How long can the queue be? When the queue length exceeds that value, the selected `strategy` is executed to shed the load.                                                                                                                                                                    |
-| `strategy`                  | `Bottleneckjs.strategy.LEAK`                    | Which strategy to use when the queue gets longer than the high water mark. [Read about strategies](#strategies). Strategies are never executed if `highWater` is `null`.                                                                                                                      |
+| `strategy`                  | `Pacekit.strategy.LEAK`                    | Which strategy to use when the queue gets longer than the high water mark. [Read about strategies](#strategies). Strategies are never executed if `highWater` is `null`.                                                                                                                      |
 | `penalty`                   | `15 * minTime`, or `5000` when `minTime` is `0` | The `penalty` value used by the `BLOCK` strategy.                                                                                                                                                                                                                                             |
 | `reservoir`                 | `null` (unlimited)                              | How many jobs can be executed before the limiter stops executing jobs. If `reservoir` reaches `0`, no jobs will be executed until it is no longer `0`. New jobs will still be queued up.                                                                                                      |
-| `reservoirRefreshInterval`  | `null` (disabled)                               | Every `reservoirRefreshInterval` milliseconds, the `reservoir` value will be automatically updated to the value of `reservoirRefreshAmount`. The `reservoirRefreshInterval` value should be a [multiple of 250 (5000 for Clustering)](https://github.com/smacejkovic/bottleneckjs/issues/88). |
+| `reservoirRefreshInterval`  | `null` (disabled)                               | Every `reservoirRefreshInterval` milliseconds, the `reservoir` value will be automatically updated to the value of `reservoirRefreshAmount`. The `reservoirRefreshInterval` value should be a [multiple of 250 (5000 for Clustering)](https://github.com/smacejkovic/pacekit/issues/88). |
 | `reservoirRefreshAmount`    | `null` (disabled)                               | The value to set `reservoir` to when `reservoirRefreshInterval` is in use.                                                                                                                                                                                                                    |
-| `reservoirIncreaseInterval` | `null` (disabled)                               | Every `reservoirIncreaseInterval` milliseconds, the `reservoir` value will be automatically incremented by `reservoirIncreaseAmount`. The `reservoirIncreaseInterval` value should be a [multiple of 250 (5000 for Clustering)](https://github.com/smacejkovic/bottleneckjs/issues/88).       |
+| `reservoirIncreaseInterval` | `null` (disabled)                               | Every `reservoirIncreaseInterval` milliseconds, the `reservoir` value will be automatically incremented by `reservoirIncreaseAmount`. The `reservoirIncreaseInterval` value should be a [multiple of 250 (5000 for Clustering)](https://github.com/smacejkovic/pacekit/issues/88).       |
 | `reservoirIncreaseAmount`   | `null` (disabled)                               | The increment applied to `reservoir` when `reservoirIncreaseInterval` is in use.                                                                                                                                                                                                              |
 | `reservoirIncreaseMaximum`  | `null` (disabled)                               | The maximum value that `reservoir` can reach when `reservoirIncreaseInterval` is in use.                                                                                                                                                                                                      |
-| `Promise`                   | `Promise` (built-in)                            | This lets you override the Promise library used by Bottleneckjs.                                                                                                                                                                                                                              |
+| `Promise`                   | `Promise` (built-in)                            | This lets you override the Promise library used by Pacekit.                                                                                                                                                                                                                              |
 
 ### Reservoir Intervals
 
@@ -242,7 +242,7 @@ There are 2 types of Reservoir Intervals: Refresh Intervals and Increase Interva
 In this example, we throttle to 100 requests every 60 seconds:
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   reservoir: 100, // initial value
   reservoirRefreshAmount: 100,
   reservoirRefreshInterval: 60 * 1000, // must be divisible by 250
@@ -260,7 +260,7 @@ const limiter = new Bottleneckjs({
 In this example, we throttle jobs to meet the Shopify API Rate Limits. Users are allowed to send 40 requests initially, then every second grants 2 more requests up to a maximum of 40.
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   reservoir: 40, // initial value
   reservoirIncreaseAmount: 2,
   reservoirIncreaseInterval: 1000, // must be divisible by 250
@@ -336,7 +336,7 @@ wrapped()
     /* ... */
   })
   .catch(function (error) {
-    // Bottleneckjs might need to fail the job even if the original function can never fail.
+    // Pacekit might need to fail the job even if the original function can never fail.
     // For example, your job is taking longer than the `expiration` time you've set.
   });
 ```
@@ -389,31 +389,31 @@ wrapped.withOptions(
 
 A strategy is a simple algorithm that is executed every time adding a job would cause the number of queued jobs to exceed `highWater`. Strategies are never executed if `highWater` is `null`.
 
-#### Bottleneckjs.strategy.LEAK
+#### Pacekit.strategy.LEAK
 
 When adding a new job to a limiter, if the queue length reaches `highWater`, drop the oldest job with the lowest priority. This is useful when jobs that have been waiting for too long are not important anymore. If all the queued jobs are more important (based on their `priority` value) than the one being added, it will not be added.
 
-#### Bottleneckjs.strategy.OVERFLOW_PRIORITY
+#### Pacekit.strategy.OVERFLOW_PRIORITY
 
 Same as `LEAK`, except it will only drop jobs that are _less important_ than the one being added. If all the queued jobs are as or more important than the new one, it will not be added.
 
-#### Bottleneckjs.strategy.OVERFLOW
+#### Pacekit.strategy.OVERFLOW
 
 When adding a new job to a limiter, if the queue length reaches `highWater`, do not add the new job. This strategy totally ignores priority levels.
 
-#### Bottleneckjs.strategy.BLOCK
+#### Pacekit.strategy.BLOCK
 
 When adding a new job to a limiter, if the queue length reaches `highWater`, the limiter falls into "blocked mode". All queued jobs are dropped and no new jobs will be accepted until the limiter unblocks. It will unblock after `penalty` milliseconds have passed without receiving a new job. `penalty` is equal to `15 * minTime` (or `5000` if `minTime` is `0`) by default. This strategy is ideal when bruteforce attacks are to be expected. This strategy totally ignores priority levels.
 
 ### Jobs lifecycle
 
-1. **Received**. Your new job has been added to the limiter. Bottleneckjs needs to check whether it can be accepted into the queue.
-2. **Queued**. Bottleneckjs has accepted your job, but it can not tell at what exact timestamp it will run yet, because it is dependent on previous jobs.
+1. **Received**. Your new job has been added to the limiter. Pacekit needs to check whether it can be accepted into the queue.
+2. **Queued**. Pacekit has accepted your job, but it can not tell at what exact timestamp it will run yet, because it is dependent on previous jobs.
 3. **Running**. Your job is not in the queue anymore, it will be executed after a delay that was computed according to your `minTime` setting.
 4. **Executing**. Your job is executing its code.
 5. **Done**. Your job has completed.
 
-**Note:** By default, Bottleneckjs does not keep track of DONE jobs, to save memory. You can enable this feature by passing `trackDoneStatus: true` as an option when creating a limiter.
+**Note:** By default, Pacekit does not keep track of DONE jobs, to save memory. You can enable this feature by passing `trackDoneStatus: true` as an option when creating a limiter.
 
 #### counts()
 
@@ -606,7 +606,7 @@ Use `.once()` instead of `.on()` to only receive a single event.
 The following example:
 
 ```js
-const limiter = new Bottleneckjs();
+const limiter = new Pacekit();
 
 // Listen to the "failed" event
 limiter.on("failed", async (error, jobInfo) => {
@@ -706,9 +706,9 @@ limiter.stop(options).then(() => {
 Tasks that are ready to be executed will be added to that other limiter. Suppose you have 2 types of tasks, A and B. They both have their own limiter with their own settings, but both must also follow a global limiter G:
 
 ```js
-const limiterA = new Bottleneckjs(/* some settings */);
-const limiterB = new Bottleneckjs(/* some different settings */);
-const limiterG = new Bottleneckjs(/* some global settings */);
+const limiterA = new Pacekit(/* some settings */);
+const limiterB = new Pacekit(/* some different settings */);
+const limiterG = new Pacekit(/* some global settings */);
 
 limiterA.chain(limiterG);
 limiterB.chain(limiterG);
@@ -722,12 +722,12 @@ To unchain, call `limiter.chain(null);`.
 
 ## Group
 
-The `Group` feature of Bottleneckjs manages many limiters automatically for you. It creates limiters dynamically and transparently.
+The `Group` feature of Pacekit manages many limiters automatically for you. It creates limiters dynamically and transparently.
 
-Let's take a DNS server as an example of how Bottleneckjs can be used. It's a service that sees a lot of abuse and where incoming DNS requests need to be rate limited. Bottleneckjs is so tiny, it's acceptable to create one limiter for each origin IP, even if it means creating thousands of limiters. The `Group` feature is perfect for this use case. Create one Group and use the origin IP to rate limit each IP independently. Each call with the same key (IP) will be routed to the same underlying limiter. A Group is created like a limiter:
+Let's take a DNS server as an example of how Pacekit can be used. It's a service that sees a lot of abuse and where incoming DNS requests need to be rate limited. Pacekit is so tiny, it's acceptable to create one limiter for each origin IP, even if it means creating thousands of limiters. The `Group` feature is perfect for this use case. Create one Group and use the origin IP to rate limit each IP independently. Each call with the same key (IP) will be routed to the same underlying limiter. A Group is created like a limiter:
 
 ```js
-const group = new Bottleneckjs.Group(options);
+const group = new Pacekit.Group(options);
 ```
 
 The `options` object will be used for every limiter created by the Group.
@@ -767,7 +767,7 @@ Listening for the `"created"` event is the recommended way to set up a new limit
 #### updateSettings()
 
 ```js
-const group = new Bottleneckjs.Group({ maxConcurrent: 2, minTime: 250 });
+const group = new Pacekit.Group({ maxConcurrent: 2, minTime: 250 });
 group.updateSettings({ minTime: 500 });
 ```
 
@@ -798,10 +798,10 @@ console.log(limiters);
 
 ## Batching
 
-Some APIs can accept multiple operations in a single call. Bottleneckjs's Batching feature helps you take advantage of those APIs:
+Some APIs can accept multiple operations in a single call. Pacekit's Batching feature helps you take advantage of those APIs:
 
 ```js
-const batcher = new Bottleneckjs.Batcher({
+const batcher = new Pacekit.Batcher({
   maxTime: 1000,
   maxSize: 10,
 });
@@ -827,9 +827,9 @@ Batching doesn't throttle requests, it only groups them up optimally according t
 
 ## Clustering
 
-Clustering lets many limiters access the same shared state, stored in Redis. Changes to the state are Atomic, Consistent and Isolated (and fully [ACID](https://en.wikipedia.org/wiki/ACID) with the right [Durability](https://redis.io/topics/persistence) configuration), to eliminate any chances of race conditions or state corruption. Your settings, such as `maxConcurrent`, `minTime`, etc., are shared across the whole cluster, which means —for example— that `{ maxConcurrent: 5 }` guarantees no more than 5 jobs can ever run at a time in the entire cluster of limiters. 100% of Bottleneckjs's features are supported in Clustering mode. Enabling Clustering is as simple as changing a few settings. It's also a convenient way to store or export state for later use.
+Clustering lets many limiters access the same shared state, stored in Redis. Changes to the state are Atomic, Consistent and Isolated (and fully [ACID](https://en.wikipedia.org/wiki/ACID) with the right [Durability](https://redis.io/topics/persistence) configuration), to eliminate any chances of race conditions or state corruption. Your settings, such as `maxConcurrent`, `minTime`, etc., are shared across the whole cluster, which means —for example— that `{ maxConcurrent: 5 }` guarantees no more than 5 jobs can ever run at a time in the entire cluster of limiters. 100% of Pacekit's features are supported in Clustering mode. Enabling Clustering is as simple as changing a few settings. It's also a convenient way to store or export state for later use.
 
-Bottleneckjs will attempt to spread load evenly across limiters.
+Pacekit will attempt to spread load evenly across limiters.
 
 ### Enabling Clustering
 
@@ -846,7 +846,7 @@ npm install --save ioredis
 Then create a limiter or a Group:
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   /* Some basic options */
   maxConcurrent: 5,
   minTime: 500
@@ -869,7 +869,7 @@ const limiter = new Bottleneckjs({
 | Option           | Default         | Description                                                                                                                                                                                                                               |
 | ---------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `datastore`      | `"local"`       | Where the limiter stores its internal state. The default (`"local"`) keeps the state in the limiter itself. Set it to `"redis"` or `"ioredis"` to enable Clustering.                                                                      |
-| `clearDatastore` | `false`         | When set to `true`, on initial startup, the limiter will wipe any existing Bottleneckjs state data on the Redis db.                                                                                                                       |
+| `clearDatastore` | `false`         | When set to `true`, on initial startup, the limiter will wipe any existing Pacekit state data on the Redis db.                                                                                                                       |
 | `clientOptions`  | `{}`            | This object is passed directly to the redis client library you've selected.                                                                                                                                                               |
 | `clusterNodes`   | `null`          | **ioredis only.** When `clusterNodes` is not null, the client will be instantiated by calling `new Redis.Cluster(clusterNodes, clientOptions)` instead of `new Redis(clientOptions)`.                                                     |
 | `timeout`        | `null` (no TTL) | The Redis TTL in milliseconds ([TTL](https://redis.io/commands/ttl)) for the keys created by the limiter. When `timeout` is set, the limiter's state will be automatically removed from Redis after `timeout` milliseconds of inactivity. |
@@ -882,7 +882,7 @@ const limiter = new Bottleneckjs({
 ```js
 import Redis from "ioredis";
 
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   id: "my-super-app",
   datastore: "ioredis",
   clientOptions: { host: "12.34.56.78", port: 6379 },
@@ -890,18 +890,18 @@ const limiter = new Bottleneckjs({
 });
 ```
 
-Unfortunately, this is a side effect of having to disable inlining, which is necessary to make Bottleneckjs easy to use in the browser.
+Unfortunately, this is a side effect of having to disable inlining, which is necessary to make Pacekit easy to use in the browser.
 
 ### Important considerations when Clustering
 
-The first limiter connecting to Redis will store its [constructor options](#constructor) on Redis and all subsequent limiters will be using those settings. You can alter the constructor options used by all the connected limiters by calling `updateSettings()`. The `clearDatastore` option instructs a new limiter to wipe any previous Bottleneckjs data (for that `id`), including previously stored settings.
+The first limiter connecting to Redis will store its [constructor options](#constructor) on Redis and all subsequent limiters will be using those settings. You can alter the constructor options used by all the connected limiters by calling `updateSettings()`. The `clearDatastore` option instructs a new limiter to wipe any previous Pacekit data (for that `id`), including previously stored settings.
 
-Queued jobs are **NOT** stored on Redis. They are local to each limiter. Exiting the Node.js process will lose those jobs. This is because Bottleneckjs has no way to propagate the JS code to run a job across a different Node.js process than the one it originated on. Bottleneckjs doesn't keep track of the queue contents of the limiters on a cluster for performance and reliability reasons. You can use something like [`BeeQueue`](https://github.com/bee-queue/bee-queue) in addition to Bottleneckjs to get around this limitation.
+Queued jobs are **NOT** stored on Redis. They are local to each limiter. Exiting the Node.js process will lose those jobs. This is because Pacekit has no way to propagate the JS code to run a job across a different Node.js process than the one it originated on. Pacekit doesn't keep track of the queue contents of the limiters on a cluster for performance and reliability reasons. You can use something like [`BeeQueue`](https://github.com/bee-queue/bee-queue) in addition to Pacekit to get around this limitation.
 
 Due to the above, functionality relying on the queue length happens purely locally:
 
 - Priorities are local. A higher priority job will run before a lower priority job **on the same limiter**. Another limiter on the cluster might run a lower priority job before our higher priority one.
-- Assuming constant priority levels, Bottleneckjs guarantees that jobs will be run in the order they were received **on the same limiter**. Another limiter on the cluster might run a job received later before ours runs.
+- Assuming constant priority levels, Pacekit guarantees that jobs will be run in the order they were received **on the same limiter**. Another limiter on the cluster might run a job received later before ours runs.
 - `highWater` and load shedding ([strategies](#strategies)) are per limiter. However, one limiter entering Blocked mode will put the entire cluster in Blocked mode until `penalty` milliseconds have passed. See [Strategies](#strategies).
 - The `"empty"` event is triggered when the (local) queue is empty.
 - The `"idle"` event is triggered when the (local) queue is empty _and_ no jobs are currently running anywhere in the cluster.
@@ -914,7 +914,7 @@ It is **strongly recommended** that you give an `id` to every limiter and Group 
 
 It is **strongly recommended** that you set an `expiration` (See [Job Options](#job-options)) _on every job_, since that lets the cluster recover from crashed or disconnected clients. Otherwise, a client crashing while executing a job would not be able to tell the cluster to decrease its number of "running" jobs. By using expirations, those lost jobs are automatically cleared after the specified time has passed. Using expirations is essential to keeping a cluster reliable in the face of unpredictable application bugs, network hiccups, and so on.
 
-Network latency between Node.js and Redis is not taken into account when calculating timings (such as `minTime`). To minimize the impact of latency, Bottleneckjs only performs a single Redis call per [lifecycle transition](#jobs-lifecycle). Keeping the Redis server close to your limiters will help you get a more consistent experience. Keeping the system time consistent across all clients will also help.
+Network latency between Node.js and Redis is not taken into account when calculating timings (such as `minTime`). To minimize the impact of latency, Pacekit only performs a single Redis call per [lifecycle transition](#jobs-lifecycle). Keeping the Redis server close to your limiters will help you get a more consistent experience. Keeping the system time consistent across all clients will also help.
 
 It is **strongly recommended** to [set up an `"error"` listener](#events) on all your limiters and on your Groups.
 
@@ -929,7 +929,7 @@ This method returns a promise that resolves once the limiter is connected to Red
 As of v2.9.0, it's no longer necessary to wait for `.ready()` to resolve before issuing commands to a limiter. The commands will be queued until the limiter successfully connects. Make sure to listen to the `"error"` event to handle connection errors.
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   /* options */
 });
 
@@ -947,7 +947,7 @@ limiter.ready().then(() => {
 This method broadcasts the `message` string to every limiter in the Cluster. It returns a promise.
 
 ```js
-const limiter = new Bottleneckjs({
+const limiter = new Pacekit({
   /* options */
 });
 
@@ -979,34 +979,34 @@ console.log(limiter.clients());
 
 ### Additional Clustering information
 
-- Bottleneckjs is compatible with [Redis Clusters](https://redis.io/topics/cluster-tutorial), but you must use the `ioredis` datastore and the `clusterNodes` option.
-- Bottleneckjs is compatible with Redis Sentinel, but you must use the `ioredis` datastore.
-- Bottleneckjs's data is stored in Redis keys starting with `b_`. It also uses pubsub channels starting with `b_` It will not interfere with any other data stored on the server.
-- Bottleneckjs loads a few Lua scripts on the Redis server using the `SCRIPT LOAD` command. These scripts only take up a few Kb of memory. Running the `SCRIPT FLUSH` command will cause any connected limiters to experience critical errors until a new limiter connects to Redis and loads the scripts again.
+- Pacekit is compatible with [Redis Clusters](https://redis.io/topics/cluster-tutorial), but you must use the `ioredis` datastore and the `clusterNodes` option.
+- Pacekit is compatible with Redis Sentinel, but you must use the `ioredis` datastore.
+- Pacekit's data is stored in Redis keys starting with `b_`. It also uses pubsub channels starting with `b_` It will not interfere with any other data stored on the server.
+- Pacekit loads a few Lua scripts on the Redis server using the `SCRIPT LOAD` command. These scripts only take up a few Kb of memory. Running the `SCRIPT FLUSH` command will cause any connected limiters to experience critical errors until a new limiter connects to Redis and loads the scripts again.
 - The Lua scripts are highly optimized and designed to use as few resources as possible.
 
 ### Managing Redis Connections
 
-Bottleneckjs needs to create 2 Redis Clients to function, one for normal operations and one for pubsub subscriptions. These 2 clients are kept in a `Bottleneckjs.RedisConnection` (NodeRedis) or a `Bottleneckjs.IORedisConnection` (ioredis) object, referred to as the Connection object.
+Pacekit needs to create 2 Redis Clients to function, one for normal operations and one for pubsub subscriptions. These 2 clients are kept in a `Pacekit.RedisConnection` (NodeRedis) or a `Pacekit.IORedisConnection` (ioredis) object, referred to as the Connection object.
 
 By default, every Group and every standalone limiter (a limiter not created by a Group) will create their own Connection object, but it is possible to manually control this behavior. In this example, every Group and limiter is sharing the same Connection object and therefore the same 2 clients:
 
 ```js
-const connection = new Bottleneckjs.RedisConnection({
+const connection = new Pacekit.RedisConnection({
   clientOptions: {
     /* NodeRedis/ioredis options */
   },
   // ioredis also accepts `clusterNodes` here
 });
 
-const limiter = new Bottleneckjs({ connection: connection });
-const group = new Bottleneckjs.Group({ connection: connection });
+const limiter = new Pacekit({ connection: connection });
+const group = new Pacekit.Group({ connection: connection });
 ```
 
 You can access and reuse the Connection object of any Group or limiter:
 
 ```js
-const group = new Bottleneckjs.Group({ connection: limiter.connection });
+const group = new Pacekit.Group({ connection: limiter.connection });
 ```
 
 When a Connection object is created manually, the connectivity `"error"` events are emitted on the Connection itself.
@@ -1017,7 +1017,7 @@ connection.on("error", (err) => {
 });
 ```
 
-If you already have a NodeRedis/ioredis client, you can ask Bottleneckjs to reuse it, although currently the Connection object will still create a second client for pubsub operations:
+If you already have a NodeRedis/ioredis client, you can ask Pacekit to reuse it, although currently the Connection object will still create a second client for pubsub operations:
 
 ```js
 import Redis from "redis";
@@ -1025,13 +1025,13 @@ const client = new Redis.createClient({
   /* options */
 });
 
-const connection = new Bottleneckjs.RedisConnection({
+const connection = new Pacekit.RedisConnection({
   // `clientOptions` and `clusterNodes` will be ignored since we're passing a raw client
   client: client,
 });
 
-const limiter = new Bottleneckjs({ connection: connection });
-const group = new Bottleneckjs.Group({ connection: connection });
+const limiter = new Pacekit({ connection: connection });
+const group = new Pacekit.Group({ connection: connection });
 ```
 
 Depending on your application, using more clients can improve performance.
@@ -1055,7 +1055,7 @@ Make sure you've read the ['Gotchas'](#gotchas) section.
 
 To see exactly what a limiter is doing in real time, listen to the `"debug"` event. It contains detailed information about how the limiter is executing your code. Adding [job IDs](#job-options) to all your jobs makes the debug output more readable.
 
-When Bottleneckjs has to fail one of your jobs, it does so by using `BottleneckjsError` objects. This lets you tell those errors apart from your own code's errors:
+When Pacekit has to fail one of your jobs, it does so by using `BottleneckjsError` objects. This lets you tell those errors apart from your own code's errors:
 
 ```js
 limiter
@@ -1064,7 +1064,7 @@ limiter
     /* ... */
   })
   .catch((error) => {
-    if (error instanceof Bottleneckjs.BottleneckjsError) {
+    if (error instanceof Pacekit.BottleneckjsError) {
       /* ... */
     }
   });
@@ -1076,8 +1076,8 @@ The internal algorithms essentially haven't changed from v1, but many small chan
 
 All the breaking changes:
 
-- Bottleneckjs v2 requires Node 6+ or a modern browser. Use `require("bottleneckjs/es5")` if you need ES5 support in v2. Bottleneckjs v1 will continue to use ES5 only.
-- The Bottleneckjs constructor now takes an options object. See [Constructor](#constructor).
+- Pacekit v2 requires Node 6+ or a modern browser. Use `require("pacekit/es5")` if you need ES5 support in v2. Pacekit v1 will continue to use ES5 only.
+- The Pacekit constructor now takes an options object. See [Constructor](#constructor).
 - The `Cluster` feature is now called `Group`. This is to distinguish it from the new v2 [Clustering](#clustering) feature.
 - The `Group` constructor takes an options object to match the limiter constructor.
 - Jobs take an optional options object. See [Job options](#job-options).
@@ -1107,7 +1107,7 @@ This README is always in need of improvements. If wording can be clearer and sim
 
 Suggestions and bug reports are also welcome.
 
-To work on the Bottleneckjs code, simply clone the repo, makes your changes to the files located in `src/` only, then run `./scripts/build.sh && npm test` to ensure that everything is set up correctly.
+To work on the Pacekit code, simply clone the repo, makes your changes to the files located in `src/` only, then run `./scripts/build.sh && npm test` to ensure that everything is set up correctly.
 
 To speed up compilation time during development, run `./scripts/build.sh dev` instead. Make sure to build and test without `dev` before submitting a PR.
 
@@ -1115,8 +1115,8 @@ The tests must also pass in Clustering mode and using the ES5 bundle. You'll nee
 
 All contributions are appreciated and will be considered.
 
-[license-url]: https://github.com/smacejkovic/bottleneckjs/blob/master/LICENSE
-[npm-url]: https://www.npmjs.com/package/bottleneckjs
-[npm-license]: https://img.shields.io/npm/l/bottleneckjs.svg?style=flat
-[npm-version]: https://img.shields.io/npm/v/bottleneckjs.svg?style=flat
-[npm-downloads]: https://img.shields.io/npm/dm/bottleneckjs.svg?style=flat
+[license-url]: https://github.com/smacejkovic/pacekit/blob/master/LICENSE
+[npm-url]: https://www.npmjs.com/package/pacekit
+[npm-license]: https://img.shields.io/npm/l/pacekit.svg?style=flat
+[npm-version]: https://img.shields.io/npm/v/pacekit.svg?style=flat
+[npm-downloads]: https://img.shields.io/npm/dm/pacekit.svg?style=flat

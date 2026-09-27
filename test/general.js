@@ -1,5 +1,5 @@
 var makeTest = require('./context')
-var Bottleneckjs = require('./bottleneckjs')
+var Pacekit = require('./pacekit')
 var assert = require('assert')
 var child_process = require('child_process')
 
@@ -20,7 +20,7 @@ describe('General', function () {
       const { iterate } = require('leakage')
 
       const result = await iterate.async(async () => {
-        const limiter = new Bottleneckjs({ datastore: 'local' })
+        const limiter = new Pacekit({ datastore: 'local' })
         await limiter.ready()
         return limiter.disconnect(false)
       }, { iterations: 25 })
@@ -31,7 +31,7 @@ describe('General', function () {
       c = makeTest()
       this.timeout(12000)
       const { iterate } = require('leakage')
-      const limiter = new Bottleneckjs({ datastore: 'local', maxConcurrent: 1, minTime: 10 })
+      const limiter = new Pacekit({ datastore: 'local', maxConcurrent: 1, minTime: 10 })
       await limiter.ready()
       var ctr = 0
       var i = 0
@@ -51,9 +51,9 @@ describe('General', function () {
   it('Should prompt to upgrade', function () {
     c = makeTest()
     try {
-      var limiter = new Bottleneckjs(1, 250)
+      var limiter = new Pacekit(1, 250)
     } catch (err) {
-      c.mustEqual(err.message, 'Bottleneckjs v2 takes a single object argument. Refer to https://github.com/smacejkovic/bottleneckjs#upgrading-to-v2 if you\'re upgrading from Bottleneckjs v1.')
+      c.mustEqual(err.message, 'Pacekit v2 takes a single object argument. Refer to https://github.com/smacejkovic/pacekit#upgrading-to-v2 if you\'re upgrading from Pacekit v1.')
     }
   })
 
@@ -95,7 +95,7 @@ describe('General', function () {
 
     class Hello {
       constructor() {
-        this.emitter = new Bottleneckjs.Events(this)
+        this.emitter = new Pacekit.Events(this)
       }
 
       doSomething() {

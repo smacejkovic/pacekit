@@ -1,7 +1,7 @@
-var Bottleneckjs = require('../bottleneckjs.js')
+var Pacekit = require('../pacekit.js')
 var now = Date.now()
 
-var limiter = new Bottleneckjs({
+var limiter = new Pacekit({
   reservoir: 2,
   reservoirIncreaseAmount: 2,
   reservoirIncreaseInterval: 200

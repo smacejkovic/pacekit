@@ -10,16 +10,16 @@ Events = require "./Events"
 States = require "./States"
 Sync = require "./Sync"
 
-class Bottleneckjs
-  Bottleneckjs.default = Bottleneckjs
-  Bottleneckjs.Events = Events
-  Bottleneckjs.version = Bottleneckjs::version = require("./version.json").version
-  Bottleneckjs.strategy = Bottleneckjs::strategy = { LEAK:1, OVERFLOW:2, OVERFLOW_PRIORITY:4, BLOCK:3 }
-  Bottleneckjs.BottleneckError = Bottleneckjs::BottleneckError = require "./BottleneckError"
-  Bottleneckjs.Group = Bottleneckjs::Group = require "./Group"
-  Bottleneckjs.RedisConnection = Bottleneckjs::RedisConnection = require "./RedisConnection"
-  Bottleneckjs.IORedisConnection = Bottleneckjs::IORedisConnection = require "./IORedisConnection"
-  Bottleneckjs.Batcher = Bottleneckjs::Batcher = require "./Batcher"
+class Pacekit
+  Pacekit.default = Pacekit
+  Pacekit.Events = Events
+  Pacekit.version = Pacekit::version = require("./version.json").version
+  Pacekit.strategy = Pacekit::strategy = { LEAK:1, OVERFLOW:2, OVERFLOW_PRIORITY:4, BLOCK:3 }
+  Pacekit.BottleneckError = Pacekit::BottleneckError = require "./BottleneckError"
+  Pacekit.Group = Pacekit::Group = require "./Group"
+  Pacekit.RedisConnection = Pacekit::RedisConnection = require "./RedisConnection"
+  Pacekit.IORedisConnection = Pacekit::IORedisConnection = require "./IORedisConnection"
+  Pacekit.Batcher = Pacekit::Batcher = require "./Batcher"
   jobDefaults:
     priority: DEFAULT_PRIORITY
     weight: 1
@@ -29,7 +29,7 @@ class Bottleneckjs
     maxConcurrent: null
     minTime: 0
     highWater: null
-    strategy: Bottleneckjs::strategy.LEAK
+    strategy: Pacekit::strategy.LEAK
     penalty: null
     reservoir: null
     reservoirRefreshInterval: null
@@ -82,14 +82,14 @@ class Bottleneckjs
       storeInstanceOptions = parser.load options, @localStoreDefaults, {}
       new LocalDatastore @, storeOptions, storeInstanceOptions
     else
-      throw new Bottleneckjs::BottleneckError "Invalid datastore type: #{@datastore}"
+      throw new Pacekit::BottleneckError "Invalid datastore type: #{@datastore}"
 
     @_queues.on "leftzero", => @_store.heartbeat?.ref?()
     @_queues.on "zero", => @_store.heartbeat?.unref?()
 
   _validateOptions: (options, invalid) ->
     unless options? and typeof options == "object" and invalid.length == 0
-      throw new Bottleneckjs::BottleneckError "Bottleneckjs v2 takes a single object argument. Refer to https://github.com/smacejkovic/bottleneckjs#upgrading-to-v2 if you're upgrading from Bottleneckjs v1."
+      throw new Pacekit::BottleneckError "Pacekit v2 takes a single object argument. Refer to https://github.com/smacejkovic/pacekit#upgrading-to-v2 if you're upgrading from Pacekit v1."
 
   ready: -> @_store.ready
 
@@ -213,8 +213,8 @@ class Bottleneckjs
         waitForExecuting(0)
     else
       @schedule { priority: NUM_PRIORITIES - 1, weight: 0 }, => waitForExecuting(1)
-    @_receive = (job) -> job._reject new Bottleneckjs::BottleneckError options.enqueueErrorMessage
-    @stop = => @Promise.reject new Bottleneckjs::BottleneckError "stop() has already been called"
+    @_receive = (job) -> job._reject new Pacekit::BottleneckError options.enqueueErrorMessage
+    @stop = => @Promise.reject new Pacekit::BottleneckError "stop() has already been called"
     done
 
   _addToQueue: (job) =>
@@ -230,11 +230,11 @@ class Bottleneckjs
       job.doDrop()
       return true
     else if reachedHWM
-      shifted = if strategy == Bottleneckjs::strategy.LEAK then @_queues.shiftLastFrom(options.priority)
-      else if strategy == Bottleneckjs::strategy.OVERFLOW_PRIORITY then @_queues.shiftLastFrom(options.priority + 1)
-      else if strategy == Bottleneckjs::strategy.OVERFLOW then job
+      shifted = if strategy == Pacekit::strategy.LEAK then @_queues.shiftLastFrom(options.priority)
+      else if strategy == Pacekit::strategy.OVERFLOW_PRIORITY then @_queues.shiftLastFrom(options.priority + 1)
+      else if strategy == Pacekit::strategy.OVERFLOW then job
       if shifted? then shifted.doDrop()
-      if not shifted? or strategy == Bottleneckjs::strategy.OVERFLOW
+      if not shifted? or strategy == Pacekit::strategy.OVERFLOW
         if not shifted? then job.doDrop()
         return reachedHWM
 
@@ -245,7 +245,7 @@ class Bottleneckjs
 
   _receive: (job) ->
     if @_states.jobStatus(job.options.id)?
-      job._reject new Bottleneckjs::BottleneckError "A job with the same id already exists (id=#{job.options.id})"
+      job._reject new Pacekit::BottleneckError "A job with the same id already exists (id=#{job.options.id})"
       false
     else
       job.doReceive()
@@ -295,4 +295,4 @@ class Bottleneckjs
 
   incrementReservoir: (incr=0) -> @_store.__incrementReservoir__ incr
 
-module.exports = Bottleneckjs
+module.exports = Pacekit

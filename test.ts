@@ -1,16 +1,16 @@
-/// <reference path="bottleneckjs.d.ts" />
+/// <reference path="pacekit.d.ts" />
 
-import Bottleneckjs from "bottleneckjs";
+import Pacekit from "pacekit";
 // import * as assert from "assert";
 function assert(b: boolean): void { }
 
 /*
 This file is run by scripts/build.sh.
-It is used to validate the typings in bottleneckjs.d.ts.
+It is used to validate the typings in pacekit.d.ts.
 The command is: tsc --noEmit --strictNullChecks test.ts
 This file cannot be run directly.
 In order to do that, you must comment out the first line,
-and change "bottleneckjs" to "." on the third line.
+and change "pacekit" to "." on the third line.
 */
 
 function withCb(foo: number, bar: () => void, cb: (err: any, result: string) => void) {
@@ -18,13 +18,13 @@ function withCb(foo: number, bar: () => void, cb: (err: any, result: string) => 
   cb(null, s);
 }
 
-console.log(Bottleneckjs);
+console.log(Pacekit);
 
-let limiter = new Bottleneckjs({
+let limiter = new Pacekit({
   maxConcurrent: 5,
   minTime: 1000,
   highWater: 20,
-  strategy: Bottleneckjs.strategy.LEAK,
+  strategy: Pacekit.strategy.LEAK,
   reservoirRefreshInterval: 1000 * 60,
   reservoirRefreshAmount: 10,
   reservoirIncreaseInterval: 1000 * 60,
@@ -82,7 +82,7 @@ limiter.on("message", (msg) => console.log(msg));
 
 limiter.publish(JSON.stringify({ a: "abc", b: { c: 123 } }));
 
-function checkEventInfo(info: Bottleneckjs.EventInfo) {
+function checkEventInfo(info: Pacekit.EventInfo) {
   const numArgs: number = info.args.length;
   const id: string = info.options.id;
 }
@@ -163,11 +163,11 @@ limiter.on('done', (info) => {
   const count: number = info.retryCount;
 })
 
-let group = new Bottleneckjs.Group({
+let group = new Pacekit.Group({
   maxConcurrent: 5,
   minTime: 1000,
   highWater: 10,
-  strategy: Bottleneckjs.strategy.LEAK,
+  strategy: Pacekit.strategy.LEAK,
   datastore: "ioredis",
   clearDatastore: true,
   clientOptions: {},
@@ -226,7 +226,7 @@ let counts = limiter.counts();
 console.log(`${counts.EXECUTING + 2}`);
 console.log(limiter.jobStatus('some-id'))
 console.log(limiter.jobs());
-console.log(limiter.jobs(Bottleneckjs.Status.RUNNING));
+console.log(limiter.jobs(Pacekit.Status.RUNNING));
 
 
 group.deleteKey("pizza")
@@ -261,7 +261,7 @@ const id: string = limiter.id;
 const datastore: string = limiter.datastore;
 const channel: string = limiter.channel();
 
-const redisConnection = new Bottleneckjs.RedisConnection({
+const redisConnection = new Pacekit.RedisConnection({
   client: "NodeRedis client object",
   clientOptions: {}
 })
@@ -276,11 +276,11 @@ redisConnection.on("error", (err) => {
   console.log(err.message)
 })
 
-const limiterWithConn = new Bottleneckjs({
+const limiterWithConn = new Pacekit({
   connection: redisConnection
 })
 
-const ioredisConnection = new Bottleneckjs.IORedisConnection({
+const ioredisConnection = new Pacekit.IORedisConnection({
   client: "ioredis client object",
   clientOptions: {},
   clusterNodes: []
@@ -292,24 +292,24 @@ ioredisConnection.ready()
     const subscriber = ioredisConnectionClients.subscriber;
   })
 
-ioredisConnection.on("error", (err: Bottleneckjs.BottleneckError) => {
+ioredisConnection.on("error", (err: Pacekit.BottleneckError) => {
   console.log(err.message)
 })
 
-const groupWithConn = new Bottleneckjs.Group({
+const groupWithConn = new Pacekit.Group({
   connection: ioredisConnection
 })
 
-const limiterWithConnFromGroup = new Bottleneckjs({
+const limiterWithConnFromGroup = new Pacekit({
   connection: groupWithConn.connection
 })
 
-const groupWithConnFromLimiter = new Bottleneckjs.Group({
+const groupWithConnFromLimiter = new Pacekit.Group({
   connection: limiterWithConn.connection
 })
 
 
-const batcher = new Bottleneckjs.Batcher({
+const batcher = new Pacekit.Batcher({
   maxTime: 1000,
   maxSize: 10
 })
@@ -319,7 +319,7 @@ batcher.on("batch", (batch) => {
   console.log("Number of elements:", len)
 })
 
-batcher.on("error", (err: Bottleneckjs.BottleneckError) => {
+batcher.on("error", (err: Pacekit.BottleneckError) => {
   console.log(err.message)
 })
 
@@ -328,7 +328,7 @@ batcher.add({ xyz: 5 })
   .then(() => console.log("Flushed!"))
 
 const object = {}
-const emitter = new Bottleneckjs.Events(object)
+const emitter = new Pacekit.Events(object)
 const listenerCount: number = emitter.listenerCount('info')
 emitter.trigger('info', 'hello', 'world', 123).then(function (result) {
   console.log(result)

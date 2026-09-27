@@ -1,11 +1,11 @@
 /**
-  * This file contains the Bottleneckjs library (MIT), compiled to ES2017, and without Clustering support.
-  * https://github.com/smacejkovic/bottleneckjs
+  * This file contains the Pacekit library (MIT), compiled to ES2017, and without Clustering support.
+  * https://github.com/smacejkovic/pacekit
   */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 		typeof define === 'function' && define.amd ? define(factory) :
-			(global.Bottleneckjs = factory());
+			(global.Pacekit = factory());
 }(this, (function () {
 	'use strict';
 
@@ -351,7 +351,7 @@
 			return Math.random().toString(36).slice(2);
 		}
 
-		doDrop({ error, message = "This job has been dropped by Bottleneckjs" } = {}) {
+		doDrop({ error, message = "This job has been dropped by Pacekit" } = {}) {
 			if (this._states.remove(this.options.id)) {
 				if (this.rejectOnDrop) {
 					this._reject(error != null ? error : new BottleneckError$1(message));
@@ -367,7 +367,7 @@
 			var status;
 			status = this._states.jobStatus(this.options.id);
 			if (!(status === expected || (expected === "DONE" && status === null))) {
-				throw new BottleneckError$1(`Invalid job status ${status}, expected ${expected}. Please open an issue at https://github.com/smacejkovic/bottleneckjs/issues`);
+				throw new BottleneckError$1(`Invalid job status ${status}, expected ${expected}. Please open an issue at https://github.com/smacejkovic/pacekit/issues`);
 			}
 		}
 
@@ -814,11 +814,11 @@
 		default: version$1
 	});
 
-	var require$$2 = () => console.log('You must import the full version of Bottleneckjs in order to use this feature.');
+	var require$$2 = () => console.log('You must import the full version of Pacekit in order to use this feature.');
 
-	var require$$3 = () => console.log('You must import the full version of Bottleneckjs in order to use this feature.');
+	var require$$3 = () => console.log('You must import the full version of Pacekit in order to use this feature.');
 
-	var require$$4 = () => console.log('You must import the full version of Bottleneckjs in order to use this feature.');
+	var require$$4 = () => console.log('You must import the full version of Pacekit in order to use this feature.');
 
 	var Events$2, Group, IORedisConnection$1, RedisConnection$1, Scripts$1, parser$3;
 
@@ -840,7 +840,7 @@
 				parser$3.load(this.limiterOptions, this.defaults, this);
 				this.Events = new Events$2(this);
 				this.instances = {};
-				this.Bottleneckjs = Bottleneck_1;
+				this.Pacekit = Bottleneck_1;
 				this._startAutoCleanup();
 				this.sharedConnection = this.connection != null;
 				if (this.connection == null) {
@@ -856,7 +856,7 @@
 				var ref;
 				return (ref = this.instances[key]) != null ? ref : (() => {
 					var limiter;
-					limiter = this.instances[key] = new this.Bottleneckjs(Object.assign(this.limiterOptions, {
+					limiter = this.instances[key] = new this.Pacekit(Object.assign(this.limiterOptions, {
 						id: `${this.id}-${key}`,
 						timeout: this.timeout,
 						connection: this.connection
@@ -1030,11 +1030,11 @@
 
 	var Batcher_1 = Batcher;
 
-	var require$$4$1 = () => console.log('You must import the full version of Bottleneckjs in order to use this feature.');
+	var require$$4$1 = () => console.log('You must import the full version of Pacekit in order to use this feature.');
 
 	var require$$8 = getCjsExportFromNamespace(version$2);
 
-	var Bottleneckjs, DEFAULT_PRIORITY$1, Events$4, Job$1, LocalDatastore$1, NUM_PRIORITIES$1, Queues$1, RedisDatastore$1, States$1, Sync$1, parser$5,
+	var Pacekit, DEFAULT_PRIORITY$1, Events$4, Job$1, LocalDatastore$1, NUM_PRIORITIES$1, Queues$1, RedisDatastore$1, States$1, Sync$1, parser$5,
 		splice = [].splice;
 
 	NUM_PRIORITIES$1 = 10;
@@ -1057,8 +1057,8 @@
 
 	Sync$1 = Sync_1;
 
-	Bottleneckjs = (function () {
-		class Bottleneckjs {
+	Pacekit = (function () {
+		class Pacekit {
 			constructor(options = {}, ...invalid) {
 				var storeInstanceOptions, storeOptions;
 				this._addToQueue = this._addToQueue.bind(this);
@@ -1080,7 +1080,7 @@
 						storeInstanceOptions = parser$5.load(options, this.localStoreDefaults, {});
 						return new LocalDatastore$1(this, storeOptions, storeInstanceOptions);
 					} else {
-						throw new Bottleneckjs.prototype.BottleneckError(`Invalid datastore type: ${this.datastore}`);
+						throw new Pacekit.prototype.BottleneckError(`Invalid datastore type: ${this.datastore}`);
 					}
 				}).call(this);
 				this._queues.on("leftzero", () => {
@@ -1095,7 +1095,7 @@
 
 			_validateOptions(options, invalid) {
 				if (!((options != null) && typeof options === "object" && invalid.length === 0)) {
-					throw new Bottleneckjs.prototype.BottleneckError("Bottleneckjs v2 takes a single object argument. Refer to https://github.com/smacejkovic/bottleneckjs#upgrading-to-v2 if you're upgrading from Bottleneckjs v1.");
+					throw new Pacekit.prototype.BottleneckError("Pacekit v2 takes a single object argument. Refer to https://github.com/smacejkovic/pacekit#upgrading-to-v2 if you're upgrading from Pacekit v1.");
 				}
 			}
 
@@ -1316,10 +1316,10 @@
 					return waitForExecuting(1);
 				});
 				this._receive = function (job) {
-					return job._reject(new Bottleneckjs.prototype.BottleneckError(options.enqueueErrorMessage));
+					return job._reject(new Pacekit.prototype.BottleneckError(options.enqueueErrorMessage));
 				};
 				this.stop = () => {
-					return this.Promise.reject(new Bottleneckjs.prototype.BottleneckError("stop() has already been called"));
+					return this.Promise.reject(new Pacekit.prototype.BottleneckError("stop() has already been called"));
 				};
 				return done;
 			}
@@ -1339,11 +1339,11 @@
 					job.doDrop();
 					return true;
 				} else if (reachedHWM) {
-					shifted = strategy === Bottleneckjs.prototype.strategy.LEAK ? this._queues.shiftLastFrom(options.priority) : strategy === Bottleneckjs.prototype.strategy.OVERFLOW_PRIORITY ? this._queues.shiftLastFrom(options.priority + 1) : strategy === Bottleneckjs.prototype.strategy.OVERFLOW ? job : void 0;
+					shifted = strategy === Pacekit.prototype.strategy.LEAK ? this._queues.shiftLastFrom(options.priority) : strategy === Pacekit.prototype.strategy.OVERFLOW_PRIORITY ? this._queues.shiftLastFrom(options.priority + 1) : strategy === Pacekit.prototype.strategy.OVERFLOW ? job : void 0;
 					if (shifted != null) {
 						shifted.doDrop();
 					}
-					if ((shifted == null) || strategy === Bottleneckjs.prototype.strategy.OVERFLOW) {
+					if ((shifted == null) || strategy === Pacekit.prototype.strategy.OVERFLOW) {
 						if (shifted == null) {
 							job.doDrop();
 						}
@@ -1358,7 +1358,7 @@
 
 			_receive(job) {
 				if (this._states.jobStatus(job.options.id) != null) {
-					job._reject(new Bottleneckjs.prototype.BottleneckError(`A job with the same id already exists (id=${job.options.id})`));
+					job._reject(new Pacekit.prototype.BottleneckError(`A job with the same id already exists (id=${job.options.id})`));
 					return false;
 				} else {
 					job.doReceive();
@@ -1435,41 +1435,41 @@
 			}
 
 		}
-		Bottleneckjs.default = Bottleneckjs;
+		Pacekit.default = Pacekit;
 
-		Bottleneckjs.Events = Events$4;
+		Pacekit.Events = Events$4;
 
-		Bottleneckjs.version = Bottleneckjs.prototype.version = require$$8.version;
+		Pacekit.version = Pacekit.prototype.version = require$$8.version;
 
-		Bottleneckjs.strategy = Bottleneckjs.prototype.strategy = {
+		Pacekit.strategy = Pacekit.prototype.strategy = {
 			LEAK: 1,
 			OVERFLOW: 2,
 			OVERFLOW_PRIORITY: 4,
 			BLOCK: 3
 		};
 
-		Bottleneckjs.BottleneckError = Bottleneckjs.prototype.BottleneckError = BottleneckError_1;
+		Pacekit.BottleneckError = Pacekit.prototype.BottleneckError = BottleneckError_1;
 
-		Bottleneckjs.Group = Bottleneckjs.prototype.Group = Group_1;
+		Pacekit.Group = Pacekit.prototype.Group = Group_1;
 
-		Bottleneckjs.RedisConnection = Bottleneckjs.prototype.RedisConnection = require$$2;
+		Pacekit.RedisConnection = Pacekit.prototype.RedisConnection = require$$2;
 
-		Bottleneckjs.IORedisConnection = Bottleneckjs.prototype.IORedisConnection = require$$3;
+		Pacekit.IORedisConnection = Pacekit.prototype.IORedisConnection = require$$3;
 
-		Bottleneckjs.Batcher = Bottleneckjs.prototype.Batcher = Batcher_1;
+		Pacekit.Batcher = Pacekit.prototype.Batcher = Batcher_1;
 
-		Bottleneckjs.prototype.jobDefaults = {
+		Pacekit.prototype.jobDefaults = {
 			priority: DEFAULT_PRIORITY$1,
 			weight: 1,
 			expiration: null,
 			id: "<no-id>"
 		};
 
-		Bottleneckjs.prototype.storeDefaults = {
+		Pacekit.prototype.storeDefaults = {
 			maxConcurrent: null,
 			minTime: 0,
 			highWater: null,
-			strategy: Bottleneckjs.prototype.strategy.LEAK,
+			strategy: Pacekit.prototype.strategy.LEAK,
 			penalty: null,
 			reservoir: null,
 			reservoirRefreshInterval: null,
@@ -1479,13 +1479,13 @@
 			reservoirIncreaseMaximum: null
 		};
 
-		Bottleneckjs.prototype.localStoreDefaults = {
+		Pacekit.prototype.localStoreDefaults = {
 			Promise: Promise,
 			timeout: null,
 			heartbeatInterval: 250
 		};
 
-		Bottleneckjs.prototype.redisStoreDefaults = {
+		Pacekit.prototype.redisStoreDefaults = {
 			Promise: Promise,
 			timeout: null,
 			heartbeatInterval: 5000,
@@ -1497,7 +1497,7 @@
 			connection: null
 		};
 
-		Bottleneckjs.prototype.instanceDefaults = {
+		Pacekit.prototype.instanceDefaults = {
 			datastore: "local",
 			connection: null,
 			id: "<no-id>",
@@ -1506,17 +1506,17 @@
 			Promise: Promise
 		};
 
-		Bottleneckjs.prototype.stopDefaults = {
+		Pacekit.prototype.stopDefaults = {
 			enqueueErrorMessage: "This limiter has been stopped and cannot accept new jobs.",
 			dropWaitingJobs: true,
 			dropErrorMessage: "This limiter has been stopped."
 		};
 
-		return Bottleneckjs;
+		return Pacekit;
 
 	}).call(commonjsGlobal);
 
-	var Bottleneck_1 = Bottleneckjs;
+	var Bottleneck_1 = Pacekit;
 
 	var lib = Bottleneck_1;
 

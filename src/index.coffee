@@ -1,1 +1,1 @@
-module.exports = require "./Bottleneckjs"
+module.exports = require "./Pacekit"

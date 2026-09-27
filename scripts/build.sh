@@ -16,20 +16,20 @@ clean() {
 }
 
 makeLib10() {
-  echo '[B] Compiling Bottleneckjs to Node 10+...'
+  echo '[B] Compiling Pacekit to Node 10+...'
   npx coffee --compile --bare --no-header src/*.coffee
   mv src/*.js lib/
 }
 
 makeLib6() {
-  echo '[B] Compiling Bottleneckjs to Node 6+...'
+  echo '[B] Compiling Pacekit to Node 6+...'
   ln -s .babelrc.lib .babelrc
   npx coffee --compile --bare --no-header --transpile src/*.coffee
   mv src/*.js lib/
 }
 
 makeES5() {
-  echo '[B] Compiling Bottleneckjs to ES5...'
+  echo '[B] Compiling Pacekit to ES5...'
   ln -s .babelrc.es5 .babelrc
   npx coffee --compile --bare --no-header src/*.coffee
   mv src/*.js lib/
@@ -47,7 +47,7 @@ makeLight() {
 
 makeTypings() {
   echo '[B] Compiling and testing TS typings...'
-  npx ejs-cli bottleneckjs.d.ts.ejs > bottleneckjs.d.ts
+  npx ejs-cli pacekit.d.ts.ejs > pacekit.d.ts
   npx ejs-cli light.d.ts.ejs > light.d.ts
   npx tsc --noEmit --strict test.ts
 }

@@ -1,16 +1,16 @@
 {
-  "name": "bottleneckjs",
+  "name": "pacekit",
   "version": "2.19.5",
   "description": "Distributed task scheduler and rate limiter",
   "main": "lib/index.js",
-  "typings": "bottleneckjs.d.ts",
+  "typings": "pacekit.d.ts",
   "scripts": {
     "test": "mocha test",
     "test-all": "./scripts/test_all.sh"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/smacejkovic/bottleneckjs"
+    "url": "https://github.com/smacejkovic/pacekit"
   },
   "keywords": [
     "async rate limiter",
@@ -31,7 +31,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/smacejkovic/bottleneckjs/issues"
+    "url": "https://github.com/smacejkovic/pacekit/issues"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",

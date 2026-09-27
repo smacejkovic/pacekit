@@ -18,7 +18,7 @@ class Job
 
   _randomIndex: -> Math.random().toString(36).slice(2)
 
-  doDrop: ({ error, message="This job has been dropped by Bottleneckjs" } = {}) ->
+  doDrop: ({ error, message="This job has been dropped by Pacekit" } = {}) ->
     if @_states.remove @options.id
       if @rejectOnDrop then @_reject (error ? new BottleneckError message)
       @Events.trigger "dropped", { @args, @options, @task, @promise }
@@ -29,7 +29,7 @@ class Job
   _assertStatus: (expected) ->
     status = @_states.jobStatus @options.id
     if not (status == expected or (expected == "DONE" and status == null))
-      throw new BottleneckError "Invalid job status #{status}, expected #{expected}. Please open an issue at https://github.com/smacejkovic/bottleneckjs/issues"
+      throw new BottleneckError "Invalid job status #{status}, expected #{expected}. Please open an issue at https://github.com/smacejkovic/pacekit/issues"
 
   doReceive: () ->
     @_states.start @options.id

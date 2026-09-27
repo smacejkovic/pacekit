@@ -1,8 +1,8 @@
 {
-  "name": "bottleneckjs",
-  "main": "bottleneckjs.js",
+  "name": "pacekit",
+  "main": "pacekit.js",
   "version": "2.19.5",
-  "homepage": "https://github.com/smacejkovic/bottleneckjs",
+  "homepage": "https://github.com/smacejkovic/pacekit",
   "authors": [
     "smacejkovic <github@simongrondin.name>"
   ],

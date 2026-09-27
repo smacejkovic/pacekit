@@ -1,5 +1,5 @@
 var makeTest = require('./context')
-var Bottleneckjs = require('./bottleneckjs')
+var Pacekit = require('./pacekit')
 var assert = require('assert')
 
 describe('Priority', function () {
@@ -33,7 +33,7 @@ describe('Priority', function () {
       maxConcurrent: 1,
       minTime: 100,
       highWater: 3,
-      strategy: Bottleneckjs.strategy.LEAK,
+      strategy: Pacekit.strategy.LEAK,
       rejectOnDrop: false
     })
 
@@ -66,7 +66,7 @@ describe('Priority', function () {
       maxConcurrent: 1,
       minTime: 100,
       highWater: 2,
-      strategy: Bottleneckjs.strategy.OVERFLOW,
+      strategy: Pacekit.strategy.OVERFLOW,
       rejectOnDrop: false
     })
     var called = false
@@ -101,7 +101,7 @@ describe('Priority', function () {
       maxConcurrent: 1,
       minTime: 100,
       highWater: 2,
-      strategy: Bottleneckjs.strategy.OVERFLOW_PRIORITY,
+      strategy: Pacekit.strategy.OVERFLOW_PRIORITY,
       rejectOnDrop: false
     })
     var called = false
@@ -137,7 +137,7 @@ describe('Priority', function () {
       minTime: 100,
       highWater: 2,
       trackDoneStatus: true,
-      strategy: Bottleneckjs.strategy.BLOCK
+      strategy: Pacekit.strategy.BLOCK
     })
     var called = 0
 
@@ -152,8 +152,8 @@ describe('Priority', function () {
             return c.limiter.schedule(c.job, null, 8)
           })
           .catch(function (err) {
-            assert(err instanceof Bottleneckjs.BottleneckError)
-            c.mustEqual(err.message, 'This job has been dropped by Bottleneckjs')
+            assert(err instanceof Pacekit.BottleneckError)
+            c.mustEqual(err.message, 'This job has been dropped by Pacekit')
             c.limiter.removeAllListeners('error')
             done()
           })

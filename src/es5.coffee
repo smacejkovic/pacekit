@@ -1,3 +1,3 @@
 require("regenerator-runtime/runtime")
 
-module.exports = require "./Bottleneckjs"
+module.exports = require "./Pacekit"

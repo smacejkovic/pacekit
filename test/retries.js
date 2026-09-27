@@ -1,5 +1,5 @@
 var makeTest = require('./context')
-var Bottleneckjs = require('./bottleneckjs')
+var Pacekit = require('./pacekit')
 var assert = require('assert')
 var child_process = require('child_process')
 

@@ -1,5 +1,5 @@
 global.TEST = true
-var Bottleneckjs = require('./bottleneckjs')
+var Pacekit = require('./pacekit')
 var assert = require('assert')
 
 module.exports = function (options = {}) {
@@ -36,7 +36,7 @@ module.exports = function (options = {}) {
     options.datastore = 'local'
   }
 
-  var limiter = new Bottleneckjs(options)
+  var limiter = new Pacekit(options)
   // limiter.on("debug", function (str, args) { console.log(`${Date.now()-start} ${str} ${JSON.stringify(args)}`) })
   if (!options.errorEventsExpected) {
     limiter.on("error", function (err) {

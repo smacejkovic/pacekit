@@ -1,7 +1,7 @@
 var States = require('../lib/States')
 var assert = require('assert')
 var c = require('./context')({ datastore: 'local' })
-var Bottleneckjs = require('./bottleneckjs')
+var Pacekit = require('./pacekit')
 
 describe('States', function () {
 
@@ -95,7 +95,7 @@ describe('States', function () {
       states.statusJobs('Z')
     } catch (err) {
       if (process.env.BUILD !== 'es5' && process.env.BUILD !== 'light') {
-        assert(err instanceof Bottleneckjs.BottleneckError)
+        assert(err instanceof Pacekit.BottleneckError)
       }
       done()
     }
