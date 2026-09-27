@@ -10,16 +10,16 @@ Events = require "./Events"
 States = require "./States"
 Sync = require "./Sync"
 
-class Bottleneck
-  Bottleneck.default = Bottleneck
-  Bottleneck.Events = Events
-  Bottleneck.version = Bottleneck::version = require("./version.json").version
-  Bottleneck.strategy = Bottleneck::strategy = { LEAK:1, OVERFLOW:2, OVERFLOW_PRIORITY:4, BLOCK:3 }
-  Bottleneck.BottleneckError = Bottleneck::BottleneckError = require "./BottleneckError"
-  Bottleneck.Group = Bottleneck::Group = require "./Group"
-  Bottleneck.RedisConnection = Bottleneck::RedisConnection = require "./RedisConnection"
-  Bottleneck.IORedisConnection = Bottleneck::IORedisConnection = require "./IORedisConnection"
-  Bottleneck.Batcher = Bottleneck::Batcher = require "./Batcher"
+class Bottleneckjs
+  Bottleneckjs.default = Bottleneckjs
+  Bottleneckjs.Events = Events
+  Bottleneckjs.version = Bottleneckjs::version = require("./version.json").version
+  Bottleneckjs.strategy = Bottleneckjs::strategy = { LEAK:1, OVERFLOW:2, OVERFLOW_PRIORITY:4, BLOCK:3 }
+  Bottleneckjs.BottleneckError = Bottleneckjs::BottleneckError = require "./BottleneckError"
+  Bottleneckjs.Group = Bottleneckjs::Group = require "./Group"
+  Bottleneckjs.RedisConnection = Bottleneckjs::RedisConnection = require "./RedisConnection"
+  Bottleneckjs.IORedisConnection = Bottleneckjs::IORedisConnection = require "./IORedisConnection"
+  Bottleneckjs.Batcher = Bottleneckjs::Batcher = require "./Batcher"
   jobDefaults:
     priority: DEFAULT_PRIORITY
     weight: 1
@@ -29,7 +29,7 @@ class Bottleneck
     maxConcurrent: null
     minTime: 0
     highWater: null
-    strategy: Bottleneck::strategy.LEAK
+    strategy: Bottleneckjs::strategy.LEAK
     penalty: null
     reservoir: null
     reservoirRefreshInterval: null
@@ -82,14 +82,14 @@ class Bottleneck
       storeInstanceOptions = parser.load options, @localStoreDefaults, {}
       new LocalDatastore @, storeOptions, storeInstanceOptions
     else
-      throw new Bottleneck::BottleneckError "Invalid datastore type: #{@datastore}"
+      throw new Bottleneckjs::BottleneckError "Invalid datastore type: #{@datastore}"
 
     @_queues.on "leftzero", => @_store.heartbeat?.ref?()
     @_queues.on "zero", => @_store.heartbeat?.unref?()
 
   _validateOptions: (options, invalid) ->
     unless options? and typeof options == "object" and invalid.length == 0
-      throw new Bottleneck::BottleneckError "Bottleneck v2 takes a single object argument. Refer to https://github.com/SGrondin/bottleneck#upgrading-to-v2 if you're upgrading from Bottleneck v1."
+      throw new Bottleneckjs::BottleneckError "Bottleneckjs v2 takes a single object argument. Refer to https://github.com/smacejkovic/bottleneckjs#upgrading-to-v2 if you're upgrading from Bottleneckjs v1."
 
   ready: -> @_store.ready
 
@@ -213,8 +213,8 @@ class Bottleneck
         waitForExecuting(0)
     else
       @schedule { priority: NUM_PRIORITIES - 1, weight: 0 }, => waitForExecuting(1)
-    @_receive = (job) -> job._reject new Bottleneck::BottleneckError options.enqueueErrorMessage
-    @stop = => @Promise.reject new Bottleneck::BottleneckError "stop() has already been called"
+    @_receive = (job) -> job._reject new Bottleneckjs::BottleneckError options.enqueueErrorMessage
+    @stop = => @Promise.reject new Bottleneckjs::BottleneckError "stop() has already been called"
     done
 
   _addToQueue: (job) =>
@@ -230,11 +230,11 @@ class Bottleneck
       job.doDrop()
       return true
     else if reachedHWM
-      shifted = if strategy == Bottleneck::strategy.LEAK then @_queues.shiftLastFrom(options.priority)
-      else if strategy == Bottleneck::strategy.OVERFLOW_PRIORITY then @_queues.shiftLastFrom(options.priority + 1)
-      else if strategy == Bottleneck::strategy.OVERFLOW then job
+      shifted = if strategy == Bottleneckjs::strategy.LEAK then @_queues.shiftLastFrom(options.priority)
+      else if strategy == Bottleneckjs::strategy.OVERFLOW_PRIORITY then @_queues.shiftLastFrom(options.priority + 1)
+      else if strategy == Bottleneckjs::strategy.OVERFLOW then job
       if shifted? then shifted.doDrop()
-      if not shifted? or strategy == Bottleneck::strategy.OVERFLOW
+      if not shifted? or strategy == Bottleneckjs::strategy.OVERFLOW
         if not shifted? then job.doDrop()
         return reachedHWM
 
@@ -245,7 +245,7 @@ class Bottleneck
 
   _receive: (job) ->
     if @_states.jobStatus(job.options.id)?
-      job._reject new Bottleneck::BottleneckError "A job with the same id already exists (id=#{job.options.id})"
+      job._reject new Bottleneckjs::BottleneckError "A job with the same id already exists (id=#{job.options.id})"
       false
     else
       job.doReceive()
@@ -295,4 +295,4 @@ class Bottleneck
 
   incrementReservoir: (incr=0) -> @_store.__incrementReservoir__ incr
 
-module.exports = Bottleneck
+module.exports = Bottleneckjs

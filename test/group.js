@@ -1,5 +1,5 @@
 var makeTest = require('./context')
-var Bottleneck = require('./bottleneck')
+var Bottleneckjs = require('./bottleneckjs')
 var assert = require('assert')
 
 describe('Group', function () {
@@ -11,7 +11,7 @@ describe('Group', function () {
 
   it('Should create limiters', function (done) {
     c = makeTest()
-    var group = new Bottleneck.Group({
+    var group = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100
     })
 
@@ -38,7 +38,7 @@ describe('Group', function () {
     }, 40)
 
     group.key('A').submit(function (cb) {
-      c.mustEqual(results, [[1,2], [5], [6], [3], [7], [4]])
+      c.mustEqual(results, [[1, 2], [5], [6], [3], [7], [4]])
       cb()
       done()
     }, null)
@@ -46,7 +46,7 @@ describe('Group', function () {
 
   it('Should set up the limiter IDs (default)', function () {
     c = makeTest()
-    var group = new Bottleneck.Group({
+    var group = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100
     })
 
@@ -64,7 +64,7 @@ describe('Group', function () {
 
   it('Should set up the limiter IDs (custom)', function () {
     c = makeTest()
-    var group = new Bottleneck.Group({
+    var group = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100,
       id: 'custom-id'
     })
@@ -83,7 +83,7 @@ describe('Group', function () {
 
   it('Should pass new limiter to \'created\' event', function () {
     c = makeTest()
-    var group = new Bottleneck.Group({
+    var group = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100
     })
 
@@ -94,9 +94,9 @@ describe('Group', function () {
       keys.push(key)
       promises.push(
         created.updateSettings({ id: key })
-        .then(function (limiter) {
-          ids.push(limiter.id)
-        })
+          .then(function (limiter) {
+            ids.push(limiter.id)
+          })
       )
     })
 
@@ -110,17 +110,17 @@ describe('Group', function () {
     group.key('A')
 
     return Promise.all(promises)
-    .then(function () {
-      c.mustEqual(keys, ids)
-      return c.limiter.ready()
-    })
+      .then(function () {
+        c.mustEqual(keys, ids)
+        return c.limiter.ready()
+      })
 
   })
 
   it('Should pass error on failure', function (done) {
     var failureMessage = 'SOMETHING BLEW UP!!'
     c = makeTest()
-    var group = new Bottleneck.Group({
+    var group = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100
     })
     c.mustEqual(Object.keys(group.limiters), [])
@@ -140,9 +140,9 @@ describe('Group', function () {
     group.key('A').schedule(job, 3)
     group.key('A').schedule(job, 4)
     group.key('B').schedule(() => Promise.reject(new Error(failureMessage)))
-    .catch(function (err) {
-      results.push(['CAUGHT', err.message])
-    })
+      .catch(function (err) {
+        results.push(['CAUGHT', err.message])
+      })
     setTimeout(function () {
       group.key('C').schedule(job, 6)
       group.key('C').schedule(job, 7)
@@ -150,7 +150,7 @@ describe('Group', function () {
 
 
     group.key('A').submit(function (cb) {
-      c.mustEqual(results, [[1,2], ['CAUGHT', failureMessage], [6], [3], [7], [4]])
+      c.mustEqual(results, [[1, 2], ['CAUGHT', failureMessage], [6], [3], [7], [4]])
       cb()
       done()
     }, null)
@@ -158,10 +158,10 @@ describe('Group', function () {
 
   it('Should update its timeout', function () {
     c = makeTest()
-    var group1 = new Bottleneck.Group({
+    var group1 = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100
     })
-    var group2 = new Bottleneck.Group({
+    var group2 = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100, timeout: 5000
     })
 
@@ -171,15 +171,15 @@ describe('Group', function () {
     var p1 = group1.updateSettings({ timeout: 123 })
     var p2 = group2.updateSettings({ timeout: 456 })
     return Promise.all([p1, p2])
-    .then(function () {
-      c.mustEqual(group1.timeout, 123)
-      c.mustEqual(group2.timeout, 456)
-    })
+      .then(function () {
+        c.mustEqual(group1.timeout, 123)
+        c.mustEqual(group2.timeout, 456)
+      })
   })
 
   it('Should update its limiter options', function () {
     c = makeTest()
-    var group = new Bottleneck.Group({
+    var group = new Bottleneckjs.Group({
       maxConcurrent: 1, minTime: 100
     })
 
@@ -195,7 +195,7 @@ describe('Group', function () {
 
   it('Should support keys(), limiters(), deleteKey()', function () {
     c = makeTest()
-    var group1 = new Bottleneck.Group({
+    var group1 = new Bottleneckjs.Group({
       maxConcurrent: 1
     })
     var KEY_A = "AAA"
@@ -205,33 +205,33 @@ describe('Group', function () {
       c.pNoErrVal(group1.key(KEY_A).schedule(c.promise, null, 1), 1),
       c.pNoErrVal(group1.key(KEY_B).schedule(c.promise, null, 2), 2)
     ])
-    .then(function () {
-      var keys = group1.keys()
-      var limiters = group1.limiters()
-      c.mustEqual(keys, [KEY_A, KEY_B])
-      c.mustEqual(limiters.length, 2)
+      .then(function () {
+        var keys = group1.keys()
+        var limiters = group1.limiters()
+        c.mustEqual(keys, [KEY_A, KEY_B])
+        c.mustEqual(limiters.length, 2)
 
-      limiters.forEach(function (limiter, i) {
-        c.mustEqual(limiter.key, keys[i])
-        assert(limiter.limiter instanceof Bottleneck)
+        limiters.forEach(function (limiter, i) {
+          c.mustEqual(limiter.key, keys[i])
+          assert(limiter.limiter instanceof Bottleneckjs)
+        })
+
+        return group1.deleteKey(KEY_A)
       })
-
-      return group1.deleteKey(KEY_A)
-    })
-    .then(function (deleted) {
-      c.mustEqual(deleted, true)
-      c.mustEqual(group1.keys().length, 1)
-      return group1.deleteKey(KEY_A)
-    })
-    .then(function (deleted) {
-      c.mustEqual(deleted, false)
-      c.mustEqual(group1.keys().length, 1)
-    })
+      .then(function (deleted) {
+        c.mustEqual(deleted, true)
+        c.mustEqual(group1.keys().length, 1)
+        return group1.deleteKey(KEY_A)
+      })
+      .then(function (deleted) {
+        c.mustEqual(deleted, false)
+        c.mustEqual(group1.keys().length, 1)
+      })
   })
 
   it('Should call autocleanup', function () {
     var KEY = 'test-key'
-    var group = new Bottleneck.Group({
+    var group = new Bottleneckjs.Group({
       maxConcurrent: 1
     })
     group.updateSettings({ timeout: 50 })
@@ -241,15 +241,15 @@ describe('Group', function () {
     return group.key(KEY).schedule(function () {
       return Promise.resolve()
     })
-    .then(function () {
-      assert(group.instances[KEY] != null)
-      return new Promise(function (resolve, reject) {
-        setTimeout(resolve, 100)
+      .then(function () {
+        assert(group.instances[KEY] != null)
+        return new Promise(function (resolve, reject) {
+          setTimeout(resolve, 100)
+        })
       })
-    })
-    .then(function () {
-      assert(group.instances[KEY] == null)
-    })
+      .then(function () {
+        assert(group.instances[KEY] == null)
+      })
   })
 
 })

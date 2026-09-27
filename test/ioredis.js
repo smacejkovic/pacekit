@@ -1,5 +1,5 @@
 var makeTest = require('./context')
-var Bottleneck = require('./bottleneck')
+var Bottleneckjs = require('./bottleneckjs')
 var assert = require('assert')
 var Redis = require('ioredis')
 
@@ -41,7 +41,7 @@ if (process.env.DATASTORE === 'ioredis') {
 
     it('Should connect in Redis Cluster mode with premade client', function () {
       var client = new Redis.Cluster('')
-      var connection = new Bottleneck.IORedisConnection({ client })
+      var connection = new Bottleneckjs.IORedisConnection({ client })
       c = makeTest({
         maxConcurrent: 2,
         clientOptions: {},
@@ -57,7 +57,7 @@ if (process.env.DATASTORE === 'ioredis') {
     })
 
     it('Should accept existing connections', function () {
-      var connection = new Bottleneck.IORedisConnection()
+      var connection = new Bottleneckjs.IORedisConnection()
       connection.id = 'super-connection'
       c = makeTest({
         minTime: 50,
@@ -77,7 +77,7 @@ if (process.env.DATASTORE === 'ioredis') {
           return c.limiter.disconnect()
         })
         .then(function () {
-        // Shared connections should not be disconnected by the limiter
+          // Shared connections should not be disconnected by the limiter
           c.mustEqual(c.limiter.clients().client.status, 'ready')
           return connection.disconnect()
         })
@@ -87,7 +87,7 @@ if (process.env.DATASTORE === 'ioredis') {
       var client = new Redis()
       client.id = 'super-client'
 
-      var connection = new Bottleneck.IORedisConnection({ client })
+      var connection = new Bottleneckjs.IORedisConnection({ client })
       connection.id = 'super-connection'
       c = makeTest({
         minTime: 50,
@@ -108,14 +108,14 @@ if (process.env.DATASTORE === 'ioredis') {
           return c.limiter.disconnect()
         })
         .then(function () {
-        // Shared connections should not be disconnected by the limiter
+          // Shared connections should not be disconnected by the limiter
           c.mustEqual(c.limiter.clients().client.status, 'ready')
           return connection.disconnect()
         })
     })
 
     it('Should trigger error events on the shared connection', function (done) {
-      var connection = new Bottleneck.IORedisConnection({
+      var connection = new Bottleneckjs.IORedisConnection({
         clientOptions: {
           port: 1
         }

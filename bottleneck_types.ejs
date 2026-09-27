@@ -1,4 +1,4 @@
-namespace Bottleneck {
+namespace Bottleneckjs {
     type ConstructorOptions = {
         /**
           * How many jobs can be running at the same time.
@@ -15,9 +15,9 @@ namespace Bottleneck {
         /**
           * Which strategy to use if the queue gets longer than the high water mark.
           */
-        readonly strategy?: Bottleneck.Strategy | null;
+        readonly strategy?: Bottleneckjs.Strategy | null;
         /**
-          * The `penalty` value used by the `Bottleneck.strategy.BLOCK` strategy.
+          * The `penalty` value used by the `Bottleneckjs.strategy.BLOCK` strategy.
           */
         readonly penalty?: number | null;
         /**
@@ -61,7 +61,7 @@ namespace Bottleneck {
           */
         readonly datastore?: string | null;
         /**
-          * Override the Promise library used by Bottleneck.
+          * Override the Promise library used by Bottleneckjs.
           */
         readonly Promise?: any;
         /**
@@ -73,19 +73,19 @@ namespace Bottleneck {
           */
         readonly clusterNodes?: any;
         /**
-          * An existing Bottleneck.RedisConnection or Bottleneck.IORedisConnection object to use.
+          * An existing Bottleneckjs.RedisConnection or Bottleneckjs.IORedisConnection object to use.
           * If using, `datastore`, `clientOptions` and `clusterNodes` will be ignored.
           */
         /**
-          * Optional Redis/IORedis library from `require('ioredis')` or equivalent. If not, Bottleneck will attempt to require Redis/IORedis at runtime.
+          * Optional Redis/IORedis library from `require('ioredis')` or equivalent. If not, Bottleneckjs will attempt to require Redis/IORedis at runtime.
           */
         readonly Redis?: any;
         /**
-          * Bottleneck connection object created from `new Bottleneck.RedisConnection` or `new Bottleneck.IORedisConnection`.
+          * Bottleneckjs connection object created from `new Bottleneckjs.RedisConnection` or `new Bottleneckjs.IORedisConnection`.
           */
-        readonly connection?: Bottleneck.RedisConnection | Bottleneck.IORedisConnection | null;
+        readonly connection?: Bottleneckjs.RedisConnection | Bottleneckjs.IORedisConnection | null;
         /**
-          * When set to `true`, on initial startup, the limiter will wipe any existing Bottleneck state data on the Redis db.
+          * When set to `true`, on initial startup, the limiter will wipe any existing Bottleneckjs state data on the Redis db.
           */
         readonly clearDatastore?: boolean | null;
         /**
@@ -105,7 +105,7 @@ namespace Bottleneck {
           */
         readonly weight?: number | null;
         /**
-          * The number milliseconds a job has to finish. Jobs that take longer than their `expiration` will be failed with a `BottleneckError`.
+          * The number milliseconds a job has to finish. Jobs that take longer than their `expiration` will be failed with a `BottleneckjsError`.
           */
         readonly expiration?: number | null;
         /**
@@ -129,7 +129,7 @@ namespace Bottleneck {
     };
     type Callback<T> = (err: any, result: T) => void;
     type ClientsList = { client?: any; subscriber?: any };
-    type GroupLimiterPair = { key: string; limiter: Bottleneck };
+    type GroupLimiterPair = { key: string; limiter: Bottleneckjs };
     interface Strategy {}
 
     type EventInfo = {
@@ -176,7 +176,7 @@ namespace Bottleneck {
           */
         readonly client?: any;
         /**
-          * Optional Redis library from `require('redis')` or equivalent. If not, Bottleneck will attempt to require Redis at runtime.
+          * Optional Redis library from `require('redis')` or equivalent. If not, Bottleneckjs will attempt to require Redis at runtime.
           */
         readonly Redis?: any;
     };
@@ -195,7 +195,7 @@ namespace Bottleneck {
           */
         readonly client?: any;
         /**
-          * Optional IORedis library from `require('ioredis')` or equivalent. If not, Bottleneck will attempt to require IORedis at runtime.
+          * Optional IORedis library from `require('ioredis')` or equivalent. If not, Bottleneckjs will attempt to require IORedis at runtime.
           */
         readonly Redis?: any;
     };
@@ -211,11 +211,11 @@ namespace Bottleneck {
         readonly maxSize?: number | null;
     };
 
-    class BottleneckError extends Error {
+    class BottleneckjsError extends Error {
     }
 
     class RedisConnection {
-        constructor(options?: Bottleneck.RedisConnectionOptions);
+        constructor(options?: Bottleneckjs.RedisConnectionOptions);
 
         /**
           * Register an event listener.
@@ -244,7 +244,7 @@ namespace Bottleneck {
     }
 
     class IORedisConnection {
-        constructor(options?: Bottleneck.IORedisConnectionOptions);
+        constructor(options?: Bottleneckjs.IORedisConnectionOptions);
 
         /**
           * Register an event listener.
@@ -273,7 +273,7 @@ namespace Bottleneck {
     }
 
     class Batcher {
-        constructor(options?: Bottleneck.BatcherOptions);
+        constructor(options?: Bottleneckjs.BatcherOptions);
 
         /**
           * Register an event listener.
@@ -300,17 +300,17 @@ namespace Bottleneck {
     }
 
     class Group {
-        constructor(options?: Bottleneck.ConstructorOptions);
+        constructor(options?: Bottleneckjs.ConstructorOptions);
 
         id: string;
         datastore: string;
-        connection?: Bottleneck.RedisConnection | Bottleneck.IORedisConnection;
+        connection?: Bottleneckjs.RedisConnection | Bottleneckjs.IORedisConnection;
 
         /**
           * Returns the limiter for the specified key.
           * @param str - The limiter key.
           */
-        key(str: string): Bottleneck;
+        key(str: string): Bottleneckjs;
 
         /**
           * Register an event listener.
@@ -319,7 +319,7 @@ namespace Bottleneck {
           */
         on(name: string, fn: Function): void;
         on(name: "error", fn: (error: any) => void): void;
-        on(name: "created", fn: (limiter: Bottleneck, key: string) => void): void;
+        on(name: "created", fn: (limiter: Bottleneckjs, key: string) => void): void;
 
         /**
           * Register an event listener for one event only.
@@ -328,7 +328,7 @@ namespace Bottleneck {
           */
         once(name: string, fn: Function): void;
         once(name: "error", fn: (error: any) => void): void;
-        once(name: "created", fn: (limiter: Bottleneck, key: string) => void): void;
+        once(name: "created", fn: (limiter: Bottleneckjs, key: string) => void): void;
 
         /**
           * Removes all registered event listeners.
@@ -340,7 +340,7 @@ namespace Bottleneck {
           * Updates the group settings.
           * @param options - The new settings.
           */
-        updateSettings(options: Bottleneck.ConstructorOptions): void;
+        updateSettings(options: Bottleneckjs.ConstructorOptions): void;
 
         /**
           * Deletes the limiter for the given key.
@@ -358,7 +358,7 @@ namespace Bottleneck {
         /**
           * Returns all the key-limiter pairs.
           */
-        limiters(): Bottleneck.GroupLimiterPair[];
+        limiters(): Bottleneckjs.GroupLimiterPair[];
 
         /**
           * Returns all Group keys in the local instance
@@ -389,31 +389,31 @@ namespace Bottleneck {
     }
 }
 
-class Bottleneck {
+class Bottleneckjs {
     public static readonly strategy: {
         /**
           * When adding a new job to a limiter, if the queue length reaches `highWater`, drop the oldest job with the lowest priority. This is useful when jobs that have been waiting for too long are not important anymore. If all the queued jobs are more important (based on their `priority` value) than the one being added, it will not be added.
           */
-        readonly LEAK: Bottleneck.Strategy;
+        readonly LEAK: Bottleneckjs.Strategy;
         /**
           * Same as `LEAK`, except it will only drop jobs that are less important than the one being added. If all the queued jobs are as or more important than the new one, it will not be added.
           */
-        readonly OVERFLOW_PRIORITY: Bottleneck.Strategy;
+        readonly OVERFLOW_PRIORITY: Bottleneckjs.Strategy;
         /**
           * When adding a new job to a limiter, if the queue length reaches `highWater`, do not add the new job. This strategy totally ignores priority levels.
           */
-        readonly OVERFLOW: Bottleneck.Strategy;
+        readonly OVERFLOW: Bottleneckjs.Strategy;
         /**
           * When adding a new job to a limiter, if the queue length reaches `highWater`, the limiter falls into "blocked mode". All queued jobs are dropped and no new jobs will be accepted until the limiter unblocks. It will unblock after `penalty` milliseconds have passed without receiving a new job. `penalty` is equal to `15 * minTime` (or `5000` if `minTime` is `0`) by default and can be changed by calling `changePenalty()`. This strategy is ideal when bruteforce attacks are to be expected. This strategy totally ignores priority levels.
           */
-        readonly BLOCK: Bottleneck.Strategy;
+        readonly BLOCK: Bottleneckjs.Strategy;
     };
 
-    constructor(options?: Bottleneck.ConstructorOptions);
+    constructor(options?: Bottleneckjs.ConstructorOptions);
 
     id: string;
     datastore: string;
-    connection?: Bottleneck.RedisConnection | Bottleneck.IORedisConnection;
+    connection?: Bottleneckjs.RedisConnection | Bottleneckjs.IORedisConnection;
 
     /**
       * Returns a promise which will be resolved once the limiter is ready to accept jobs
@@ -424,7 +424,7 @@ class Bottleneck {
     /**
       * Returns a datastore-specific object of redis clients.
       */
-    clients(): Bottleneck.ClientsList;
+    clients(): Bottleneckjs.ClientsList;
 
     /**
       * Returns the name of the Redis pubsub channel used for this limiter
@@ -445,17 +445,17 @@ class Bottleneck {
     /**
       * Returns an object with the current number of jobs per status.
       */
-    counts(): Bottleneck.Counts;
+    counts(): Bottleneckjs.Counts;
 
     /**
       * Returns the status of the job with the provided job id.
       */
-    jobStatus(id: string): Bottleneck.Status;
+    jobStatus(id: string): Bottleneckjs.Status;
 
     /**
       * Returns the status of the job with the provided job id.
       */
-    jobs(status?: Bottleneck.Status): string[];
+    jobs(status?: Bottleneckjs.Status): string[];
 
     /**
       * Returns the number of requests queued.
@@ -500,14 +500,14 @@ class Bottleneck {
     on(name: "depleted",  fn: (empty: boolean) => void): void;
     on(name: "message",   fn: (message: string) => void): void;
     on(name: "debug",     fn: (message: string, info: any) => void): void;
-    on(name: "dropped",   fn: (dropped: Bottleneck.EventInfoDropped) => void): void;
-    on(name: "received",  fn: (info: Bottleneck.EventInfo) => void): void;
-    on(name: "queued",    fn: (info: Bottleneck.EventInfoQueued) => void): void;
-    on(name: "scheduled", fn: (info: Bottleneck.EventInfo) => void): void;
-    on(name: "executing", fn: (info: Bottleneck.EventInfoRetryable) => void): void;
-    on(name: "failed",    fn: (error: any, info: Bottleneck.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
-    on(name: "retry",     fn: (message: string, info: Bottleneck.EventInfoRetryable) => void): void;
-    on(name: "done",      fn: (info: Bottleneck.EventInfoRetryable) => void): void;
+    on(name: "dropped",   fn: (dropped: Bottleneckjs.EventInfoDropped) => void): void;
+    on(name: "received",  fn: (info: Bottleneckjs.EventInfo) => void): void;
+    on(name: "queued",    fn: (info: Bottleneckjs.EventInfoQueued) => void): void;
+    on(name: "scheduled", fn: (info: Bottleneckjs.EventInfo) => void): void;
+    on(name: "executing", fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
+    on(name: "failed",    fn: (error: any, info: Bottleneckjs.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
+    on(name: "retry",     fn: (message: string, info: Bottleneckjs.EventInfoRetryable) => void): void;
+    on(name: "done",      fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
 
     /**
       * Register an event listener for one event only.
@@ -520,14 +520,14 @@ class Bottleneck {
     once(name: "depleted",  fn: (empty: boolean) => void): void;
     once(name: "message",   fn: (message: string) => void): void;
     once(name: "debug",     fn: (message: string, info: any) => void): void;
-    once(name: "dropped",   fn: (dropped: Bottleneck.EventInfoDropped) => void): void;
-    once(name: "received",  fn: (info: Bottleneck.EventInfo) => void): void;
-    once(name: "queued",    fn: (info: Bottleneck.EventInfoQueued) => void): void;
-    once(name: "scheduled", fn: (info: Bottleneck.EventInfo) => void): void;
-    once(name: "executing", fn: (info: Bottleneck.EventInfoRetryable) => void): void;
-    once(name: "failed",    fn: (error: any, info: Bottleneck.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
-    once(name: "retry",     fn: (message: string, info: Bottleneck.EventInfoRetryable) => void): void;
-    once(name: "done",      fn: (info: Bottleneck.EventInfoRetryable) => void): void;
+    once(name: "dropped",   fn: (dropped: Bottleneckjs.EventInfoDropped) => void): void;
+    once(name: "received",  fn: (info: Bottleneckjs.EventInfo) => void): void;
+    once(name: "queued",    fn: (info: Bottleneckjs.EventInfoQueued) => void): void;
+    once(name: "scheduled", fn: (info: Bottleneckjs.EventInfo) => void): void;
+    once(name: "executing", fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
+    once(name: "failed",    fn: (error: any, info: Bottleneckjs.EventInfoRetryable) => Promise<number | void | null> | number | void | null): void;
+    once(name: "retry",     fn: (message: string, info: Bottleneckjs.EventInfoRetryable) => void): void;
+    once(name: "done",      fn: (info: Bottleneckjs.EventInfoRetryable) => void): void;
 
     /**
       * Removes all registered event listeners.
@@ -539,7 +539,7 @@ class Bottleneck {
       * Changes the settings for future requests.
       * @param options - The new settings.
       */
-    updateSettings(options?: Bottleneck.ConstructorOptions): Bottleneck;
+    updateSettings(options?: Bottleneckjs.ConstructorOptions): Bottleneckjs;
 
     /**
       * Adds to the reservoir count and returns the new value.
@@ -549,7 +549,7 @@ class Bottleneck {
     /**
       * The `stop()` method is used to safely shutdown a limiter. It prevents any new jobs from being added to the limiter and waits for all Executing jobs to complete.
       */
-    stop(options?: Bottleneck.StopOptions): Promise<void>;
+    stop(options?: Bottleneckjs.StopOptions): Promise<void>;
 
     /**
       * Returns the current reservoir count, if any.
@@ -560,18 +560,18 @@ class Bottleneck {
       * Chain this limiter to another.
       * @param limiter - The limiter that requests to this limiter must also follow.
       */
-    chain(limiter?: Bottleneck): Bottleneck;
+    chain(limiter?: Bottleneckjs): Bottleneckjs;
 
     <%_ for (var count of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) { _%>
-    wrap<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(fn: (<%= Array.apply(null, Array(count)).map((e, i) => i+1).map(i => `arg${i}: A${i}`).join(", ") %>) => PromiseLike<R>): ((<%_ for (var idx = 1; idx <= count; idx++) { _%><%_ if (idx > 1) { %>, <% } %>arg<%= idx %>: A<%= idx %><%_ } _%>) => Promise<R>) & { withOptions: (options: Bottleneck.JobOptions<%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>) => Promise<R>; };
+    wrap<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(fn: (<%= Array.apply(null, Array(count)).map((e, i) => i+1).map(i => `arg${i}: A${i}`).join(", ") %>) => PromiseLike<R>): ((<%_ for (var idx = 1; idx <= count; idx++) { _%><%_ if (idx > 1) { %>, <% } %>arg<%= idx %>: A<%= idx %><%_ } _%>) => Promise<R>) & { withOptions: (options: Bottleneckjs.JobOptions<%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>) => Promise<R>; };
     <%_ } _%>
 
     <%_ for (var count of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) { _%>
-    submit<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(fn: (<%_ for (var idx = 1; idx <= count; idx++) { _%>arg<%= idx %>: A<%= idx %>, <% } _%>callback: Bottleneck.Callback<R>) => void<%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>, callback: Bottleneck.Callback<R>): void;
+    submit<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(fn: (<%_ for (var idx = 1; idx <= count; idx++) { _%>arg<%= idx %>: A<%= idx %>, <% } _%>callback: Bottleneckjs.Callback<R>) => void<%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>, callback: Bottleneckjs.Callback<R>): void;
     <%_ } _%>
 
     <%_ for (var count of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) { _%>
-    submit<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(options: Bottleneck.JobOptions, fn: (<%_ for (var idx = 1; idx <= count; idx++) { _%>arg<%= idx %>: A<%= idx %>, <% } _%>callback: Bottleneck.Callback<R>) => void<%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>, callback: Bottleneck.Callback<R>): void;
+    submit<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(options: Bottleneckjs.JobOptions, fn: (<%_ for (var idx = 1; idx <= count; idx++) { _%>arg<%= idx %>: A<%= idx %>, <% } _%>callback: Bottleneckjs.Callback<R>) => void<%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>, callback: Bottleneckjs.Callback<R>): void;
     <%_ } _%>
 
     <%_ for (var count of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) { _%>
@@ -579,8 +579,8 @@ class Bottleneck {
     <%_ } _%>
 
     <%_ for (var count of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) { _%>
-    schedule<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(options: Bottleneck.JobOptions, fn: (<%= Array.apply(null, Array(count)).map((e, i) => i+1).map(i => `arg${i}: A${i}`).join(", ") %>) => PromiseLike<R><%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>): Promise<R>;
+    schedule<R<%_ for (var idx = 1; idx <= count; idx++) { _%>, A<%= idx %><%_ } _%>>(options: Bottleneckjs.JobOptions, fn: (<%= Array.apply(null, Array(count)).map((e, i) => i+1).map(i => `arg${i}: A${i}`).join(", ") %>) => PromiseLike<R><%_ for (var idx = 1; idx <= count; idx++) { _%>, arg<%= idx %>: A<%= idx %><%_ } _%>): Promise<R>;
     <%_ } _%>
 }
 
-export default Bottleneck;
+export default Bottleneckjs;

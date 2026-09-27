@@ -1,5 +1,5 @@
 var makeTest = require('./context')
-var Bottleneck = require('./bottleneck')
+var Bottleneckjs = require('./bottleneckjs')
 var assert = require('assert')
 var Redis = require('redis')
 
@@ -22,7 +22,7 @@ if (process.env.DATASTORE === 'redis') {
     })
 
     it('Should accept existing connections', function () {
-      var connection = new Bottleneck.RedisConnection()
+      var connection = new Bottleneckjs.RedisConnection()
       connection.id = 'super-connection'
       c = makeTest({
         minTime: 50,
@@ -42,7 +42,7 @@ if (process.env.DATASTORE === 'redis') {
           return c.limiter.disconnect()
         })
         .then(function () {
-        // Shared connections should not be disconnected by the limiter
+          // Shared connections should not be disconnected by the limiter
           c.mustEqual(c.limiter.clients().client.ready, true)
           return connection.disconnect()
         })
@@ -52,7 +52,7 @@ if (process.env.DATASTORE === 'redis') {
       var client = Redis.createClient()
       client.id = 'super-client'
 
-      var connection = new Bottleneck.RedisConnection({ client })
+      var connection = new Bottleneckjs.RedisConnection({ client })
       connection.id = 'super-connection'
       c = makeTest({
         minTime: 50,
@@ -73,14 +73,14 @@ if (process.env.DATASTORE === 'redis') {
           return c.limiter.disconnect()
         })
         .then(function () {
-        // Shared connections should not be disconnected by the limiter
+          // Shared connections should not be disconnected by the limiter
           c.mustEqual(c.limiter.clients().client.ready, true)
           return connection.disconnect()
         })
     })
 
     it('Should trigger error events on the shared connection', function (done) {
-      var connection = new Bottleneck.RedisConnection({
+      var connection = new Bottleneckjs.RedisConnection({
         clientOptions: {
           port: 1
         }

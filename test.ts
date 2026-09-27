@@ -1,16 +1,16 @@
-/// <reference path="bottleneck.d.ts" />
+/// <reference path="bottleneckjs.d.ts" />
 
-import Bottleneck from "bottleneck";
+import Bottleneckjs from "bottleneckjs";
 // import * as assert from "assert";
 function assert(b: boolean): void { }
 
 /*
 This file is run by scripts/build.sh.
-It is used to validate the typings in bottleneck.d.ts.
+It is used to validate the typings in bottleneckjs.d.ts.
 The command is: tsc --noEmit --strictNullChecks test.ts
 This file cannot be run directly.
 In order to do that, you must comment out the first line,
-and change "bottleneck" to "." on the third line.
+and change "bottleneckjs" to "." on the third line.
 */
 
 function withCb(foo: number, bar: () => void, cb: (err: any, result: string) => void) {
@@ -18,13 +18,13 @@ function withCb(foo: number, bar: () => void, cb: (err: any, result: string) => 
   cb(null, s);
 }
 
-console.log(Bottleneck);
+console.log(Bottleneckjs);
 
-let limiter = new Bottleneck({
+let limiter = new Bottleneckjs({
   maxConcurrent: 5,
   minTime: 1000,
   highWater: 20,
-  strategy: Bottleneck.strategy.LEAK,
+  strategy: Bottleneckjs.strategy.LEAK,
   reservoirRefreshInterval: 1000 * 60,
   reservoirRefreshAmount: 10,
   reservoirIncreaseInterval: 1000 * 60,
@@ -60,7 +60,7 @@ limiter.done().then(function (x) {
   let i: number = x;
 });
 
-limiter.submit(withCb, 1, () => {}, (err, result) => {
+limiter.submit(withCb, 1, () => { }, (err, result) => {
   let s: string = result;
   console.log(s);
   assert(s == "cb 1");
@@ -71,7 +71,7 @@ function withPromise(foo: number, bar: () => void): PromiseLike<string> {
   return Promise.resolve(s);
 }
 
-let foo: Promise<string> = limiter.schedule(withPromise, 1, () => {});
+let foo: Promise<string> = limiter.schedule(withPromise, 1, () => { });
 foo.then(function (result: string) {
   let s: string = result;
   console.log(s);
@@ -80,9 +80,9 @@ foo.then(function (result: string) {
 
 limiter.on("message", (msg) => console.log(msg));
 
-limiter.publish(JSON.stringify({ a: "abc", b: { c: 123 }}));
+limiter.publish(JSON.stringify({ a: "abc", b: { c: 123 } }));
 
-function checkEventInfo(info: Bottleneck.EventInfo) {
+function checkEventInfo(info: Bottleneckjs.EventInfo) {
   const numArgs: number = info.args.length;
   const id: string = info.options.id;
 }
@@ -163,11 +163,11 @@ limiter.on('done', (info) => {
   const count: number = info.retryCount;
 })
 
-let group = new Bottleneck.Group({
+let group = new Bottleneckjs.Group({
   maxConcurrent: 5,
   minTime: 1000,
   highWater: 10,
-  strategy: Bottleneck.strategy.LEAK,
+  strategy: Bottleneckjs.strategy.LEAK,
   datastore: "ioredis",
   clearDatastore: true,
   clientOptions: {},
@@ -179,26 +179,26 @@ group.on('created', (limiter, key) => {
   assert(key.length > 0)
 })
 
-group.key("foo").submit(withCb, 2, () => {}, (err, result) => {
-    let s: string = `${result} foo`;
-    console.log(s);
-    assert(s == "cb 2 foo");
+group.key("foo").submit(withCb, 2, () => { }, (err, result) => {
+  let s: string = `${result} foo`;
+  console.log(s);
+  assert(s == "cb 2 foo");
 });
 
-group.key("bar").submit({ priority: 4 }, withCb, 3, () => {}, (err, result) => {
-    let s: string = `${result} bar`;
-    console.log(s);
-    assert(s == "cb 3 foo");
+group.key("bar").submit({ priority: 4 }, withCb, 3, () => { }, (err, result) => {
+  let s: string = `${result} bar`;
+  console.log(s);
+  assert(s == "cb 3 foo");
 });
 
-let f1: Promise<string> = group.key("pizza").schedule(withPromise, 2, () => {});
+let f1: Promise<string> = group.key("pizza").schedule(withPromise, 2, () => { });
 f1.then(function (result: string) {
   let s: string = result;
   console.log(s);
   assert(s == "promise 2");
 });
 
-let f2: Promise<string> = group.key("pie").schedule({ priority: 4 }, withPromise, 3, () => {});
+let f2: Promise<string> = group.key("pie").schedule({ priority: 4 }, withPromise, 3, () => { });
 f2.then(function (result: string) {
   let s: string = result;
   console.log(s);
@@ -226,22 +226,22 @@ let counts = limiter.counts();
 console.log(`${counts.EXECUTING + 2}`);
 console.log(limiter.jobStatus('some-id'))
 console.log(limiter.jobs());
-console.log(limiter.jobs(Bottleneck.Status.RUNNING));
+console.log(limiter.jobs(Bottleneckjs.Status.RUNNING));
 
 
 group.deleteKey("pizza")
-.then(function (deleted: boolean) {
-  console.log(deleted)
-});
+  .then(function (deleted: boolean) {
+    console.log(deleted)
+  });
 group.updateSettings({ timeout: 5, maxConcurrent: null, reservoir: null });
 
 let keys: string[] = group.keys();
 assert(keys.length == 3);
 
 group.clusterKeys()
-.then(function (allKeys: string[]) {
-  let count = allKeys.length;
-})
+  .then(function (allKeys: string[]) {
+    let count = allKeys.length;
+  })
 
 let queued: number = limiter.chain(group.key("pizza")).queued();
 
@@ -261,55 +261,55 @@ const id: string = limiter.id;
 const datastore: string = limiter.datastore;
 const channel: string = limiter.channel();
 
-const redisConnection = new Bottleneck.RedisConnection({
+const redisConnection = new Bottleneckjs.RedisConnection({
   client: "NodeRedis client object",
   clientOptions: {}
 })
 
 redisConnection.ready()
-.then(function (redisConnectionClients) {
-  const client = redisConnectionClients.client;
-  const subscriber = redisConnectionClients.subscriber;
-})
+  .then(function (redisConnectionClients) {
+    const client = redisConnectionClients.client;
+    const subscriber = redisConnectionClients.subscriber;
+  })
 
 redisConnection.on("error", (err) => {
   console.log(err.message)
 })
 
-const limiterWithConn = new Bottleneck({
+const limiterWithConn = new Bottleneckjs({
   connection: redisConnection
 })
 
-const ioredisConnection = new Bottleneck.IORedisConnection({
+const ioredisConnection = new Bottleneckjs.IORedisConnection({
   client: "ioredis client object",
   clientOptions: {},
   clusterNodes: []
 })
 
 ioredisConnection.ready()
-.then(function (ioredisConnectionClients) {
-  const client = ioredisConnectionClients.client;
-  const subscriber = ioredisConnectionClients.subscriber;
-})
+  .then(function (ioredisConnectionClients) {
+    const client = ioredisConnectionClients.client;
+    const subscriber = ioredisConnectionClients.subscriber;
+  })
 
-ioredisConnection.on("error", (err: Bottleneck.BottleneckError) => {
+ioredisConnection.on("error", (err: Bottleneckjs.BottleneckError) => {
   console.log(err.message)
 })
 
-const groupWithConn = new Bottleneck.Group({
+const groupWithConn = new Bottleneckjs.Group({
   connection: ioredisConnection
 })
 
-const limiterWithConnFromGroup = new Bottleneck({
+const limiterWithConnFromGroup = new Bottleneckjs({
   connection: groupWithConn.connection
 })
 
-const groupWithConnFromLimiter = new Bottleneck.Group({
+const groupWithConnFromLimiter = new Bottleneckjs.Group({
   connection: limiterWithConn.connection
 })
 
 
-const batcher = new Bottleneck.Batcher({
+const batcher = new Bottleneckjs.Batcher({
   maxTime: 1000,
   maxSize: 10
 })
@@ -319,16 +319,16 @@ batcher.on("batch", (batch) => {
   console.log("Number of elements:", len)
 })
 
-batcher.on("error", (err: Bottleneck.BottleneckError) => {
+batcher.on("error", (err: Bottleneckjs.BottleneckError) => {
   console.log(err.message)
 })
 
 batcher.add("abc")
 batcher.add({ xyz: 5 })
-.then(() => console.log("Flushed!"))
+  .then(() => console.log("Flushed!"))
 
 const object = {}
-const emitter = new Bottleneck.Events(object)
+const emitter = new Bottleneckjs.Events(object)
 const listenerCount: number = emitter.listenerCount('info')
 emitter.trigger('info', 'hello', 'world', 123).then(function (result) {
   console.log(result)
