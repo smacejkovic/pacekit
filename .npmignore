@@ -1,0 +1,12 @@
+.env
+node_modules/
+test/
+test.ts
+src/
+scripts/
+*.coffee
+*.ejs
+.travis.yml
+.babelrc.es5
+.babelrc.lib
+package-lock.json

@@ -1,6 +1,6 @@
 {
   "name": "pacekit",
-  "version": "2.19.5",
+  "version": "2.19.6",
   "description": "Distributed task scheduler and rate limiter",
   "main": "lib/index.js",
   "typings": "pacekit.d.ts",

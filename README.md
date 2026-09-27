@@ -1,9 +1,5 @@
 # pacekit
 
-[![Downloads][npm-downloads]][npm-url]
-[![version][npm-version]][npm-url]
-[![License][npm-license]][license-url]
-
 Pacekit is a lightweight and zero-dependency Task Scheduler and Rate Limiter for Node.js and the browser.
 
 Pacekit is an easy solution as it adds very little complexity to your code. It is battle-hardened, reliable and production-ready and used on a large scale in private companies and open source software.
@@ -382,7 +378,7 @@ wrapped.withOptions(
 | ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `priority`   | `5`                | A priority between `0` and `9`. A job with a priority of `4` will be queued ahead of a job with a priority of `5`. **Important:** You must set a low `maxConcurrent` value for priorities to work, otherwise there is nothing to queue because jobs will be be scheduled immediately! |
 | `weight`     | `1`                | Must be an integer equal to or higher than `0`. The `weight` is what increases the number of running jobs (up to `maxConcurrent`) and decreases the `reservoir` value.                                                                                                                |
-| `expiration` | `null` (unlimited) | The number of milliseconds a job is given to complete. Jobs that execute for longer than `expiration` ms will be failed with a `BottleneckjsError`.                                                                                                                                   |
+| `expiration` | `null` (unlimited) | The number of milliseconds a job is given to complete. Jobs that execute for longer than `expiration` ms will be failed with a `Pacekit.BottleneckError`.                                                                                                                              |
 | `id`         | `<no-id>`          | You should give an ID to your jobs, it helps with [debugging](#debugging-your-application).                                                                                                                                                                                           |
 
 ### Strategies
@@ -1055,7 +1051,7 @@ Make sure you've read the ['Gotchas'](#gotchas) section.
 
 To see exactly what a limiter is doing in real time, listen to the `"debug"` event. It contains detailed information about how the limiter is executing your code. Adding [job IDs](#job-options) to all your jobs makes the debug output more readable.
 
-When Pacekit has to fail one of your jobs, it does so by using `BottleneckjsError` objects. This lets you tell those errors apart from your own code's errors:
+When Pacekit has to fail one of your jobs, it does so by using `BottleneckError` objects. This lets you tell those errors apart from your own code's errors:
 
 ```js
 limiter
@@ -1064,7 +1060,7 @@ limiter
     /* ... */
   })
   .catch((error) => {
-    if (error instanceof Pacekit.BottleneckjsError) {
+    if (error instanceof Pacekit.BottleneckError) {
       /* ... */
     }
   });
